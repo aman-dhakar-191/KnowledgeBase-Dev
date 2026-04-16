@@ -1,13 +1,15 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { AppProvider } from './contexts/AppContext';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
-import Dashboard from './pages/Dashboard';
-import NotesList from './pages/NotesList';
-import NoteView from './pages/NoteView';
-import NewNote from './pages/NewNote';
+import LoadingSpinner from './components/LoadingSpinner';
 import './App.css';
+
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const NotesList = lazy(() => import('./pages/NotesList'));
+const NoteView = lazy(() => import('./pages/NoteView'));
+const NewNote = lazy(() => import('./pages/NewNote'));
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -20,12 +22,14 @@ export default function App() {
           <div className="app__body">
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
             <main className="app__main">
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/notes" element={<NotesList />} />
-                <Route path="/note/:id" element={<NoteView />} />
-                <Route path="/new" element={<NewNote />} />
-              </Routes>
+              <Suspense fallback={<LoadingSpinner message="Loading..." />}>
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/notes" element={<NotesList />} />
+                  <Route path="/note/:id" element={<NoteView />} />
+                  <Route path="/new" element={<NewNote />} />
+                </Routes>
+              </Suspense>
             </main>
           </div>
         </div>

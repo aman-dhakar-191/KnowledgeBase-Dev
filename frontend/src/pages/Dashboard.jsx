@@ -5,14 +5,16 @@ import { useApp } from '../contexts/AppContext';
 import NoteCard from '../components/NoteCard';
 import Modal from '../components/Modal';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { createCategory, createSection, deleteNote } from '../services/api';
+import { createCategory, createSection, createTag, deleteNote } from '../services/api';
 
 export default function Dashboard() {
-  const { categories, sections, tags, notes, loading, error, setCategories, setSections, refreshNotes } = useApp();
+  const { categories, sections, tags, notes, loading, error, setCategories, setSections, setTags, refreshNotes } = useApp();
   const [catModal, setCatModal] = useState(false);
   const [secModal, setSecModal] = useState(false);
+  const [tagModal, setTagModal] = useState(false);
   const [catForm, setCatForm] = useState({ name: '', description: '' });
   const [secForm, setSecForm] = useState({ name: '', categoryId: '', order: 1 });
+  const [tagForm, setTagForm] = useState({ name: '', color: '#4CAF50' });
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState('');
 
@@ -62,6 +64,23 @@ export default function Dashboard() {
       setSections((prev) => [...prev, result.data || result]);
       setSecModal(false);
       setSecForm({ name: '', categoryId: '', order: 1 });
+    } catch (err) {
+      setFormError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAddTag = async (e) => {
+    e.preventDefault();
+    if (!tagForm.name.trim()) { setFormError('Name is required'); return; }
+    setSaving(true);
+    setFormError('');
+    try {
+      const result = await createTag(tagForm);
+      setTags((prev) => [...prev, result.data || result]);
+      setTagModal(false);
+      setTagForm({ name: '', color: '#4CAF50' });
     } catch (err) {
       setFormError(err.message);
     } finally {
@@ -170,6 +189,30 @@ export default function Dashboard() {
         )}
       </section>
 
+      {/* Tags */}
+      <section className="section">
+        <div className="section__header">
+          <h2 className="section__title">Tags</h2>
+          <button className="btn btn--outline btn--sm" onClick={() => { setTagModal(true); setFormError(''); }}>
+            <FiPlus /> Add Tag
+          </button>
+        </div>
+        {tags.length === 0 ? (
+          <div className="empty-state">
+            <FiTag className="empty-state__icon" />
+            <p>No tags yet. Tags are created automatically when added to notes, or add one manually.</p>
+          </div>
+        ) : (
+          <div className="tag-list">
+            {tags.map((tag) => (
+              <span key={tag.id} className="tag-chip" style={{ '--tag-color': tag.color || '#4CAF50' }}>
+                {tag.name}
+              </span>
+            ))}
+          </div>
+        )}
+      </section>
+
       {/* Recent Notes */}
       {recentNotes.length > 0 && (
         <section className="section">
@@ -231,6 +274,26 @@ export default function Dashboard() {
           <div className="modal__footer">
             <button type="button" className="btn btn--secondary" onClick={() => setSecModal(false)} disabled={saving}>Cancel</button>
             <button type="submit" className="btn btn--primary" disabled={saving}>{saving ? 'Saving...' : 'Add Section'}</button>
+          </div>
+        </form>
+      </Modal>
+      {/* Add Tag Modal */}
+      <Modal isOpen={tagModal} onClose={() => setTagModal(false)} title="Add Tag">
+        <form onSubmit={handleAddTag}>
+          {formError && <div className="form-error form-error--block">{formError}</div>}
+          <div className="form-group">
+            <label className="form-label" htmlFor="tag-name">Name *</label>
+            <input id="tag-name" type="text" className="form-input" value={tagForm.name}
+              onChange={(e) => setTagForm((p) => ({ ...p, name: e.target.value }))} disabled={saving} />
+          </div>
+          <div className="form-group">
+            <label className="form-label" htmlFor="tag-color">Color</label>
+            <input id="tag-color" type="color" className="form-input" value={tagForm.color}
+              onChange={(e) => setTagForm((p) => ({ ...p, color: e.target.value }))} disabled={saving} />
+          </div>
+          <div className="modal__footer">
+            <button type="button" className="btn btn--secondary" onClick={() => setTagModal(false)} disabled={saving}>Cancel</button>
+            <button type="submit" className="btn btn--primary" disabled={saving}>{saving ? 'Saving...' : 'Add Tag'}</button>
           </div>
         </form>
       </Modal>
