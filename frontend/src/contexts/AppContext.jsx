@@ -93,6 +93,7 @@ export function AppProvider({ children }) {
         setNotes,
         setCategories,
         setSections,
+        setTags,
       }}
     >
       {children}

@@ -43,3 +43,5 @@ export const createSection = (data) =>
 
 // Tags
 export const getTags = () => request('/tags');
+export const createTag = (data) =>
+  request('/tags', { method: 'POST', body: JSON.stringify(data) });
