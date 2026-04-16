@@ -1,0 +1,11 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Only allow reads/writes from the backend (Cloud Functions use admin SDK which bypasses rules)
+    // Frontend reads from the API, not directly from Firestore
+    // For development with emulator, allow all:
+    match /{document=**} {
+      allow read, write: if false; // Block direct client access; all access goes through Cloud Functions
+    }
+  }
+}

@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+functions/node_modules/
+
+# Build artifacts
+frontend/dist/
+frontend/.vite/
+
+# Environment variables (NEVER commit these)
+.env
+.env.local
+.env.*.local
+frontend/.env.local
+functions/.env
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+functions-debug.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
