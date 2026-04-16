@@ -4,6 +4,8 @@ const { db } = require('../services/firestore');
 const { saveFileToGitHub, deleteFileFromGitHub } = require('../services/github');
 const admin = require('firebase-admin');
 
+const DEFAULT_TAG_COLOR = '#4CAF50';
+
 // Helpers
 function buildGithubPath(note) {
   const category = (note.categoryId || 'uncategorized').toLowerCase().replace(/\s+/g, '-');
@@ -107,9 +109,9 @@ router.post('/', async (req, res) => {
       const tagBatch = db.batch();
       noteData.tags.forEach((tag) => {
         const tagRef = db.collection('tags').doc(tag);
-        tagBatch.set(tagRef, { name: tag, color: '#4CAF50', createdAt: now }, { merge: true });
+        tagBatch.set(tagRef, { name: tag, color: DEFAULT_TAG_COLOR, createdAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
       });
-      tagBatch.commit().catch((err) => console.error('Tag upsert failed:', err.message));
+      tagBatch.commit().catch((err) => console.error(`Tag upsert failed for note ${noteId} tags [${noteData.tags.join(', ')}]:`, err));
     }
 
     // Sync to GitHub asynchronously (don't block response)
@@ -162,9 +164,9 @@ router.put('/:id', async (req, res) => {
       const tagBatch = db.batch();
       updates.tags.forEach((tag) => {
         const tagRef = db.collection('tags').doc(tag);
-        tagBatch.set(tagRef, { name: tag, color: '#4CAF50', createdAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
+        tagBatch.set(tagRef, { name: tag, color: DEFAULT_TAG_COLOR, createdAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
       });
-      tagBatch.commit().catch((err) => console.error('Tag upsert failed:', err.message));
+      tagBatch.commit().catch((err) => console.error(`Tag upsert failed for note ${req.params.id} tags [${updates.tags.join(', ')}]:`, err));
     }
 
     const updated = { id: req.params.id, ...existing, ...updates };
