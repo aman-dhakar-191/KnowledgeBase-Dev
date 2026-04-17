@@ -20,7 +20,7 @@
           "source": "**",
           "destination": "/index.html"
         }
-      ]
+      ],
       "headers": [
         {
           "source": "**/*.@(js|css|png|jpg|jpeg|svg|gif|ico|woff|woff2)",
@@ -58,7 +58,7 @@
     "source": "**",
     "destination": "/index.html"
   }
-]
+],
       "headers": [
         {
           "source": "**/*.@(js|css|png|jpg|jpeg|svg|gif|ico|woff|woff2)",
