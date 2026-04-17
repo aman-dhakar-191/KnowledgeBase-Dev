@@ -1,9 +1,9 @@
 {
   "projects": {
-    "default": "your-firebase-project-id"
+    "default": "knowladgebase-226cc"
   },
   "targets": {
-    "your-firebase-project-id": {
+    "knowladgebase-226cc": {
       "hosting": {
         "sandbox":    ["knowledgebase-sandbox"],
         "production": ["knowledgebase-prod"]
