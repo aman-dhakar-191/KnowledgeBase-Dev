@@ -1,4 +1,8 @@
-const API_BASE_URL = import.meta.env.VITE_FUNCTIONS_URL || 'http://localhost:5001/your-project-id/us-central1/api';
+// When deployed to Firebase Hosting, the /api/** rewrite in firebase.json routes requests
+// to the Cloud Function automatically — no VITE_FUNCTIONS_URL needed in production.
+// For local development with the Firebase Emulator set VITE_FUNCTIONS_URL in .env.local:
+//   VITE_FUNCTIONS_URL=http://127.0.0.1:5001/<your-project-id>/us-central1/api
+const API_BASE_URL = import.meta.env.VITE_FUNCTIONS_URL || '/api';
 
 async function request(path, options = {}) {
   const url = `${API_BASE_URL}${path}`;
@@ -6,8 +10,24 @@ async function request(path, options = {}) {
     headers: { 'Content-Type': 'application/json' },
   };
   const config = { ...defaults, ...options, headers: { ...defaults.headers, ...options.headers } };
-  const response = await fetch(url, config);
+  let response;
+  try {
+    response = await fetch(url, config);
+  } catch (networkError) {
+    throw new Error(
+      `Network error: unable to reach the API at "${API_BASE_URL}". ` +
+      'For local development set VITE_FUNCTIONS_URL in frontend/.env.local and start the Firebase Emulator. ' +
+      `(${networkError.message})`
+    );
+  }
   if (!response.ok) {
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      throw new Error(
+        `API returned an unexpected response (HTTP ${response.status}). ` +
+        'Make sure the Firebase Cloud Function is deployed and VITE_FUNCTIONS_URL is correct.'
+      );
+    }
     const error = await response.json().catch(() => ({ message: response.statusText }));
     throw new Error(error.message || 'API request failed');
   }
