@@ -1,12 +1,35 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { FiHome, FiFileText, FiPlusCircle, FiChevronDown, FiChevronRight, FiTag, FiX } from 'react-icons/fi';
+import { FiHome, FiFileText, FiPlusCircle, FiChevronDown, FiChevronRight, FiTag, FiX, FiPlus } from 'react-icons/fi';
 import { useState } from 'react';
 import { useApp } from '../contexts/AppContext';
+import Modal from './Modal';
+import { createCategory } from '../services/api';
 
 export default function Sidebar({ isOpen, onClose }) {
   const navigate = useNavigate();
-  const { categories, sections, tags, selectedCategory, setSelectedCategory, selectedSection, setSelectedSection, selectedTags, toggleTag } = useApp();
+  const { categories, sections, tags, selectedCategory, setSelectedCategory, selectedSection, setSelectedSection, selectedTags, toggleTag, setCategories } = useApp();
   const [expandedCats, setExpandedCats] = useState({});
+  const [catModal, setCatModal] = useState(false);
+  const [catForm, setCatForm] = useState({ name: '', description: '' });
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState('');
+
+  const handleAddCategory = async (e) => {
+    e.preventDefault();
+    if (!catForm.name.trim()) { setFormError('Name is required'); return; }
+    setSaving(true);
+    setFormError('');
+    try {
+      const result = await createCategory(catForm);
+      setCategories((prev) => [...prev, result.data || result]);
+      setCatModal(false);
+      setCatForm({ name: '', description: '' });
+    } catch (err) {
+      setFormError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const toggleCat = (id) => {
     setExpandedCats((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -60,7 +83,17 @@ export default function Sidebar({ isOpen, onClose }) {
           </NavLink>
         </nav>
 
-        <div className="sidebar__section-title">Categories</div>
+        <div className="sidebar__section-title">
+          <span>Categories</span>
+          <button
+            className="sidebar__add-btn"
+            onClick={() => { setCatModal(true); setFormError(''); }}
+            aria-label="Add category"
+            title="Add category"
+          >
+            <FiPlus />
+          </button>
+        </div>
         <ul className="sidebar__categories">
           {categories.map((cat) => {
             const catSections = sections.filter((s) => s.categoryId === cat.id);
@@ -116,6 +149,27 @@ export default function Sidebar({ isOpen, onClose }) {
           </>
         )}
       </aside>
+
+      {/* Add Category Modal */}
+      <Modal isOpen={catModal} onClose={() => setCatModal(false)} title="Add Category">
+        <form onSubmit={handleAddCategory}>
+          {formError && <div className="form-error form-error--block">{formError}</div>}
+          <div className="form-group">
+            <label className="form-label" htmlFor="sidebar-cat-name">Name *</label>
+            <input id="sidebar-cat-name" type="text" className="form-input" value={catForm.name}
+              onChange={(e) => setCatForm((p) => ({ ...p, name: e.target.value }))} disabled={saving} autoFocus />
+          </div>
+          <div className="form-group">
+            <label className="form-label" htmlFor="sidebar-cat-desc">Description</label>
+            <textarea id="sidebar-cat-desc" className="form-textarea" rows={3} value={catForm.description}
+              onChange={(e) => setCatForm((p) => ({ ...p, description: e.target.value }))} disabled={saving} />
+          </div>
+          <div className="modal__footer">
+            <button type="button" className="btn btn--secondary" onClick={() => setCatModal(false)} disabled={saving}>Cancel</button>
+            <button type="submit" className="btn btn--primary" disabled={saving}>{saving ? 'Saving...' : 'Add Category'}</button>
+          </div>
+        </form>
+      </Modal>
     </>
   );
 }

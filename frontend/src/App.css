@@ -61,6 +61,8 @@ input, select, textarea { font-family: inherit; }
 .sidebar__link:hover { background: var(--color-bg); text-decoration: none; }
 .sidebar__link--active { background: #ede9fe; color: var(--color-primary); font-weight: 600; }
 .sidebar__section-title { display: flex; align-items: center; gap: 6px; padding: 12px 20px 4px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-light); font-weight: 600; }
+.sidebar__add-btn { margin-left: auto; display: flex; align-items: center; justify-content: center; background: none; border: none; color: var(--color-text-muted); cursor: pointer; padding: 2px 4px; border-radius: var(--border-radius); transition: color var(--transition), background var(--transition); }
+.sidebar__add-btn:hover { color: var(--color-primary); background: #ede9fe; }
 .sidebar__categories { list-style: none; padding: 4px 12px; }
 .sidebar__cat-btn { display: flex; align-items: center; width: 100%; gap: 6px; padding: 7px 8px; background: none; border: none; font-size: 0.875rem; color: var(--color-text); border-radius: var(--border-radius); text-align: left; transition: background var(--transition); }
 .sidebar__cat-btn:hover { background: var(--color-bg); }

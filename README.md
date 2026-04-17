@@ -289,34 +289,31 @@ cd /path/to/KnowledgeBase-Dev
 firebase deploy --only functions
 ```
 
-After deployment, note the function URL from the output, e.g.:
+The function URL is printed in the deploy output, e.g.:
 ```
-Function URL (api): https://us-central1-your-project-id.cloudfunctions.net/api
+Function URL (api): https://us-central1-<project-id>.cloudfunctions.net/api
 ```
+
+> **Tip:** You do **not** need to copy this URL for a normal Firebase Hosting deployment.
+> The `/api/**` rewrite rule already configured in `firebase.json` routes requests from
+> your Hosting site directly to the Cloud Function — no `VITE_FUNCTIONS_URL` env variable
+> is required.  Only set `VITE_FUNCTIONS_URL` when you want the local dev server to talk
+> to a specific URL (emulator or live function).
 
 ---
 
-### 3. Update Frontend with Production URL
+### 3. Deploy Frontend to Firebase Hosting
 
-Edit `frontend/.env.local`:
-
-```env
-VITE_FUNCTIONS_URL=https://us-central1-your-project-id.cloudfunctions.net/api
-```
-
-Rebuild:
-
-```bash
-cd frontend
-npm run build
-```
-
----
-
-### 4. Deploy Frontend to Firebase Hosting
+Build and deploy in one command:
 
 ```bash
 firebase deploy --only hosting
+```
+
+Or deploy everything (functions + hosting + firestore rules) at once:
+
+```bash
+firebase deploy
 ```
 
 Your app will be live at:
@@ -325,10 +322,25 @@ Your app will be live at:
 
 ---
 
-### 5. Deploy Everything at Once
+### 4. Local Development
+
+For local development start the Firebase Emulator:
 
 ```bash
-firebase deploy
+firebase emulators:start
+```
+
+Then create `frontend/.env.local` (copy from `.env.example`) and set:
+
+```env
+VITE_FUNCTIONS_URL=http://127.0.0.1:5001/<your-project-id>/us-central1/api
+```
+
+Start the Vite dev server:
+
+```bash
+cd frontend
+npm run dev
 ```
 
 ---
@@ -452,6 +464,22 @@ Base URL: `https://us-central1-{project-id}.cloudfunctions.net/api`
 ---
 
 ## 🔧 Troubleshooting
+
+### "Unexpected token '<'" or "API returned an unexpected response" on frontend
+
+This error means the frontend received an HTML page instead of JSON from the API.  Most
+commonly caused by an incorrect (or missing) `VITE_FUNCTIONS_URL` when running locally.
+
+**When deployed to Firebase Hosting** you should *not* need `VITE_FUNCTIONS_URL` at all —
+the `/api/**` rewrite in `firebase.json` routes requests to the Cloud Function automatically.
+If you see this error in production:
+1. Confirm the Cloud Function was deployed: `firebase deploy --only functions`
+2. Check the Firebase Hosting target in `.firebaserc` matches the `firebase.json` target
+
+**For local development** make sure:
+1. The Firebase Emulator is running: `firebase emulators:start`
+2. `VITE_FUNCTIONS_URL` in `frontend/.env.local` matches the emulator URL:
+   `http://127.0.0.1:5001/<your-project-id>/us-central1/api`
 
 ### "API request failed" on frontend
 - Ensure Firebase Emulator is running: `firebase emulators:start`
