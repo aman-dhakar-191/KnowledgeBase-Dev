@@ -88,3 +88,7 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json
           firebase deploy --only hosting:${{ steps.target.outputs.env }},functions --non-interactive --project knowladgebase-226cc
           firebase functions:artifacts:setpolicy --project knowladgebase-226cc
+      - name: Set Firebase artifacts cleanup policy
+        run: |
+          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json
+          firebase functions:artifacts:setpolicy --project knowladgebase-226cc
