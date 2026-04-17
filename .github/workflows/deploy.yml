@@ -67,10 +67,10 @@ jobs:
       - name: Write functions environment file
         run: |
           cat > functions/.env <<'EOF'
-          GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN_VALUE }}
-          GITHUB_OWNER=${{ secrets.GITHUB_OWNER }}
-          GITHUB_REPO=${{ secrets.GITHUB_REPO }}
-          GITHUB_BRANCH=${{ secrets.GITHUB_BRANCH }}
+          TOKEN=${{ secrets.GITHUB_TOKEN_VALUE }}
+          OWNER=${{ secrets.GITHUB_OWNER }}
+          REPO=${{ secrets.GITHUB_REPO }}
+          BRANCH=${{ secrets.GITHUB_BRANCH }}
           EOF
 
       # ---------- Deploy ----------
