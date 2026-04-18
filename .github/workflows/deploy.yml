@@ -67,10 +67,10 @@ jobs:
       - name: Write functions environment file
         run: |
           cat > functions/.env <<'EOF'
-          TOKEN=${{ secrets.GITHUB_TOKEN_VALUE }}
-          OWNER=${{ secrets.GITHUB_OWNER }}
-          REPO=${{ secrets.GITHUB_REPO }}
-          BRANCH=${{ secrets.GITHUB_BRANCH }}
+          GITHUB_TOKEN=${{ secrets.TOKEN_VALUE }}
+          GITHUB_OWNER=${{ secrets.OWNER }}
+          GITHUB_REPO=${{ secrets.REPO }}
+          GITHUB_BRANCH=${{ secrets.BRANCH }}
           EOF
 
       # ---------- Deploy ----------
@@ -86,4 +86,4 @@ jobs:
         run: |
           echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > /tmp/sa.json
           export GOOGLE_APPLICATION_CREDENTIALS=/tmp/sa.json
-          firebase deploy --only hosting:${{ steps.target.outputs.env }},functions --non-interactive --project knowladgebase-226cc --force
+          firebase deploy --only hosting:${{ steps.target.outputs.env }},functions,firestore:indexes --non-interactive --project knowladgebase-226cc --force
