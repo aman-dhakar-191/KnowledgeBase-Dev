@@ -41,7 +41,7 @@ input, select, textarea { font-family: inherit; }
 
 .app { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 .app__body { display: flex; flex: 1; overflow: hidden; }
-.app__main { flex: 1; overflow-y: auto; padding: 0; }
+.app__main { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 0; }
 
 .header { display: flex; align-items: center; gap: 16px; height: var(--header-height); padding: 0 20px; background: var(--color-surface); border-bottom: 1px solid var(--color-border); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
 .header__left { display: flex; align-items: center; gap: 12px; min-width: 200px; }
@@ -250,7 +250,7 @@ input, select, textarea { font-family: inherit; }
   :root { --sidebar-width: 280px; }
   .header__menu-btn { display: flex; }
   .header__brand { display: none; }
-  .header__left { min-width: auto; }
+  .header__left { min-width: auto; gap: 8px; }
   .header__center { max-width: none; }
   .sidebar { position: fixed; top: 0; left: 0; height: 100%; z-index: 200; transform: translateX(-100%); }
   .sidebar--open { transform: translateX(0); }
@@ -258,20 +258,43 @@ input, select, textarea { font-family: inherit; }
   .sidebar__close { display: flex; }
   .app__body { flex-direction: column; }
   .notes-grid { grid-template-columns: 1fr; }
-  .category-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .category-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .form-row { grid-template-columns: 1fr; }
-  .page { padding: 20px 16px 48px; }
+  .page { padding: 16px 12px 48px; }
   .page__hero { flex-direction: column; gap: 12px; }
-  .note-view { padding: 20px; }
+  .page__title { font-size: 1.4rem; }
+  .note-view { padding: 16px; }
   .note-view__header { flex-direction: column; }
-  .note-view__title { font-size: 1.35rem; }
+  .note-view__title { font-size: 1.25rem; }
   .note-editor__actions { flex-direction: column-reverse; }
   .note-editor__actions .btn { width: 100%; justify-content: center; }
   .modal { max-height: 95vh; }
+  .filter-panel__row { grid-template-columns: 1fr; }
+  .form-label-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .section-item { flex-wrap: wrap; gap: 6px; }
 }
 
 @media (max-width: 480px) {
-  .stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .page__header { flex-direction: column; align-items: flex-start; }
+  .header { padding: 0 12px; gap: 8px; }
+  .connection-status__label { display: none; }
+  .connection-status { padding: 3px 6px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .stat-card { padding: 14px 10px; }
+  .stat-card__value { font-size: 1.6rem; }
+  .page__header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .page__header-actions { width: 100%; }
+  .page__header-actions .btn { width: 100%; justify-content: center; }
+  .note-card { padding: 14px; }
+  .category-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .category-card { padding: 14px; }
+  .section__header { flex-wrap: wrap; gap: 8px; }
+  .note-view__meta { flex-direction: column; gap: 6px; }
+  .inline-create { gap: 4px; }
+  .breadcrumb { font-size: 0.8rem; flex-wrap: wrap; }
 }
+
+/* Prevent MDEditor toolbar from causing horizontal overflow */
+.w-md-editor { max-width: 100% !important; box-sizing: border-box; }
+.w-md-editor-toolbar { overflow-x: auto; scrollbar-width: thin; }
+.w-md-editor-content { overflow-x: auto; }
