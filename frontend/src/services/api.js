@@ -65,3 +65,10 @@ export const createSection = (data) =>
 export const getTags = () => request('/tags');
 export const createTag = (data) =>
   request('/tags', { method: 'POST', body: JSON.stringify(data) });
+
+// Image upload — sends file as base64 JSON, returns { url }
+export const uploadImage = (filename, contentType, base64Data) =>
+  request('/upload', {
+    method: 'POST',
+    body: JSON.stringify({ filename, contentType, data: base64Data }),
+  });
