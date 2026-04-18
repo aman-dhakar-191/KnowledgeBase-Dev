@@ -72,6 +72,19 @@ jobs:
           GITHUB_REPO=${{ secrets.REPO }}
           GITHUB_BRANCH=${{ secrets.BRANCH }}
           EOF
+      - name: Debug secrets presence
+        run: |
+          [ -n "$OWNER" ]  && echo "OWNER: SET"  || echo "OWNER: EMPTY"
+          [ -n "$REPO" ]   && echo "REPO: SET"   || echo "REPO: EMPTY"
+          [ -n "$BRANCH" ] && echo "BRANCH: SET" || echo "BRANCH: EMPTY"
+          [ -n "$TOKEN" ]  && echo "TOKEN_VALUE: SET"  || echo "TOKEN_VALUE: EMPTY"
+          [ -n "$VITE_URL" ] && echo "VITE_FUNCTIONS_URL: SET" || echo "VITE_FUNCTIONS_URL: EMPTY"
+        env:
+          OWNER:    ${{ secrets.OWNER }}
+          REPO:     ${{ secrets.REPO }}
+          BRANCH:   ${{ secrets.BRANCH }}
+          TOKEN:    ${{ secrets.TOKEN_VALUE }}
+          VITE_URL: ${{ secrets.VITE_FUNCTIONS_URL }}
 
       # ---------- Deploy ----------
       - name: Install Firebase CLI
