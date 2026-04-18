@@ -6,6 +6,7 @@ const notesRouter = require('./notes/index');
 const categoriesRouter = require('./notes/categories');
 const sectionsRouter = require('./notes/sections');
 const tagsRouter = require('./notes/tags');
+const uploadRouter = require('./upload');
 
 const app = express();
 
@@ -20,7 +21,7 @@ app.use(cors({
   credentials: true,
 }));
 
-app.use(express.json());
+app.use(express.json({ limit: '20mb' }));
 
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
@@ -30,6 +31,7 @@ app.use('/notes', notesRouter);
 app.use('/categories', categoriesRouter);
 app.use('/sections', sectionsRouter);
 app.use('/tags', tagsRouter);
+app.use('/upload', uploadRouter);
 
 // 404 handler
 app.use((req, res) => res.status(404).json({ success: false, message: 'Route not found' }));

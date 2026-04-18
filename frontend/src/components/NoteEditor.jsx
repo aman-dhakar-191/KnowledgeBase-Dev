@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { FiX, FiCheck } from 'react-icons/fi';
+import { useState, useRef } from 'react';
+import { FiX, FiCheck, FiImage } from 'react-icons/fi';
 import MDEditor from '@uiw/react-md-editor';
 import { useApp } from '../contexts/AppContext';
-import { createCategory, createSection } from '../services/api';
+import { createCategory, createSection, uploadImage } from '../services/api';
 
 const CREATE_NEW = '__create_new__';
 
@@ -34,6 +34,10 @@ export default function NoteEditor({ initialNote, onSave, onCancel, isSaving }) 
   const [newSecName, setNewSecName] = useState('');
   const [secCreating, setSecCreating] = useState(false);
   const [secError, setSecError] = useState('');
+
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const fileInputRef = useRef(null);
 
   const availableSections = sections.filter((s) => s.categoryId === form.categoryId);
 
@@ -110,6 +114,32 @@ export default function NoteEditor({ initialNote, onSave, onCancel, isSaving }) 
     } finally {
       setSecCreating(false);
     }
+  };
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = '';
+    if (file.size > 10 * 1024 * 1024) {
+      setUploadError('File too large (max 10 MB)');
+      return;
+    }
+    setUploading(true);
+    setUploadError('');
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      try {
+        const base64 = ev.target.result.split(',')[1];
+        const result = await uploadImage(file.name, file.type, base64);
+        const md = `\n![${file.name}](${result.url})\n`;
+        handleChange('content', (form.content || '') + md);
+      } catch (err) {
+        setUploadError(err.message);
+      } finally {
+        setUploading(false);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const addTag = () => {
@@ -263,7 +293,25 @@ export default function NoteEditor({ initialNote, onSave, onCancel, isSaving }) 
       </div>
 
       <div className="form-group">
-        <label className="form-label">Content * (Markdown supported)</label>
+        <div className="form-label-row">
+          <label className="form-label">Content * (Markdown supported)</label>
+          <button
+            type="button"
+            className="btn btn--secondary btn--sm"
+            onClick={() => fileInputRef.current.click()}
+            disabled={isSaving || uploading}
+          >
+            <FiImage /> {uploading ? 'Uploading...' : 'Upload Image'}
+          </button>
+        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleFileSelect}
+        />
+        {uploadError && <span className="form-error">{uploadError}</span>}
         {errors.content && <span className="form-error">{errors.content}</span>}
         <div data-color-mode="light">
           <MDEditor
