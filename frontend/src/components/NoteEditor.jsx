@@ -1,7 +1,10 @@
 import { useState } from 'react';
-import { FiX } from 'react-icons/fi';
+import { FiX, FiCheck } from 'react-icons/fi';
 import MDEditor from '@uiw/react-md-editor';
 import { useApp } from '../contexts/AppContext';
+import { createCategory, createSection } from '../services/api';
+
+const CREATE_NEW = '__create_new__';
 
 function getInitialForm(initialNote) {
   if (!initialNote) {
@@ -17,10 +20,20 @@ function getInitialForm(initialNote) {
 }
 
 export default function NoteEditor({ initialNote, onSave, onCancel, isSaving }) {
-  const { categories, sections } = useApp();
+  const { categories, sections, setCategories, setSections } = useApp();
   const [form, setForm] = useState(() => getInitialForm(initialNote));
   const [tagInput, setTagInput] = useState('');
   const [errors, setErrors] = useState({});
+
+  const [addingCat, setAddingCat] = useState(false);
+  const [newCatName, setNewCatName] = useState('');
+  const [catCreating, setCatCreating] = useState(false);
+  const [catError, setCatError] = useState('');
+
+  const [addingSec, setAddingSec] = useState(false);
+  const [newSecName, setNewSecName] = useState('');
+  const [secCreating, setSecCreating] = useState(false);
+  const [secError, setSecError] = useState('');
 
   const availableSections = sections.filter((s) => s.categoryId === form.categoryId);
 
@@ -39,6 +52,64 @@ export default function NoteEditor({ initialNote, onSave, onCancel, isSaving }) 
       return updated;
     });
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
+  };
+
+  const handleCategoryChange = (e) => {
+    if (e.target.value === CREATE_NEW) {
+      setAddingCat(true);
+      setNewCatName('');
+      setCatError('');
+    } else {
+      setAddingCat(false);
+      handleChange('categoryId', e.target.value);
+    }
+  };
+
+  const handleSectionChange = (e) => {
+    if (e.target.value === CREATE_NEW) {
+      setAddingSec(true);
+      setNewSecName('');
+      setSecError('');
+    } else {
+      setAddingSec(false);
+      handleChange('sectionId', e.target.value);
+    }
+  };
+
+  const handleCreateCategory = async () => {
+    if (!newCatName.trim()) { setCatError('Name is required'); return; }
+    setCatCreating(true);
+    setCatError('');
+    try {
+      const result = await createCategory({ name: newCatName.trim() });
+      const created = result.data || result;
+      setCategories((prev) => [...prev, created]);
+      handleChange('categoryId', created.id);
+      setAddingCat(false);
+      setNewCatName('');
+    } catch (err) {
+      setCatError(err.message);
+    } finally {
+      setCatCreating(false);
+    }
+  };
+
+  const handleCreateSection = async () => {
+    if (!newSecName.trim()) { setSecError('Name is required'); return; }
+    setSecCreating(true);
+    setSecError('');
+    try {
+      const result = await createSection({ name: newSecName.trim(), categoryId: form.categoryId });
+      const created = result.data || result;
+      setSections((prev) => [...prev, created]);
+      handleChange('sectionId', created.id);
+      setAddingSec(false);
+      setNewSecName('');
+    } catch (err) {
+      setSecError(err.message);
+    } finally {
+      setSecCreating(false);
+    }
   };
 
   const addTag = () => {
@@ -87,37 +158,81 @@ export default function NoteEditor({ initialNote, onSave, onCancel, isSaving }) 
       </div>
 
       <div className="form-row">
+        {/* Category */}
         <div className="form-group">
           <label className="form-label" htmlFor="note-category">Category *</label>
           <select
             id="note-category"
             className={`form-select ${errors.categoryId ? 'form-input--error' : ''}`}
-            value={form.categoryId}
-            onChange={(e) => handleChange('categoryId', e.target.value)}
+            value={addingCat ? CREATE_NEW : form.categoryId}
+            onChange={handleCategoryChange}
             disabled={isSaving}
           >
             <option value="">Select category...</option>
             {categories.map((cat) => (
               <option key={cat.id} value={cat.id}>{cat.name}</option>
             ))}
+            <option value={CREATE_NEW}>+ Add new category</option>
           </select>
           {errors.categoryId && <span className="form-error">{errors.categoryId}</span>}
+          {addingCat && (
+            <div className="inline-create">
+              <input
+                className="inline-create__input"
+                value={newCatName}
+                onChange={(e) => setNewCatName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleCreateCategory())}
+                placeholder="Category name..."
+                autoFocus
+                disabled={catCreating}
+              />
+              <button type="button" className="inline-create__confirm" onClick={handleCreateCategory} disabled={catCreating} title="Create">
+                <FiCheck />
+              </button>
+              <button type="button" className="inline-create__cancel" onClick={() => setAddingCat(false)} disabled={catCreating} title="Cancel">
+                <FiX />
+              </button>
+              {catError && <span className="form-error inline-create__error">{catError}</span>}
+            </div>
+          )}
         </div>
 
+        {/* Section */}
         <div className="form-group">
           <label className="form-label" htmlFor="note-section">Section</label>
           <select
             id="note-section"
             className="form-select"
-            value={form.sectionId}
-            onChange={(e) => handleChange('sectionId', e.target.value)}
+            value={addingSec ? CREATE_NEW : form.sectionId}
+            onChange={handleSectionChange}
             disabled={!form.categoryId || isSaving}
           >
             <option value="">Select section...</option>
             {availableSections.map((sec) => (
               <option key={sec.id} value={sec.id}>{sec.name}</option>
             ))}
+            {form.categoryId && <option value={CREATE_NEW}>+ Add new section</option>}
           </select>
+          {addingSec && (
+            <div className="inline-create">
+              <input
+                className="inline-create__input"
+                value={newSecName}
+                onChange={(e) => setNewSecName(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleCreateSection())}
+                placeholder="Section name..."
+                autoFocus
+                disabled={secCreating}
+              />
+              <button type="button" className="inline-create__confirm" onClick={handleCreateSection} disabled={secCreating} title="Create">
+                <FiCheck />
+              </button>
+              <button type="button" className="inline-create__cancel" onClick={() => setAddingSec(false)} disabled={secCreating} title="Cancel">
+                <FiX />
+              </button>
+              {secError && <span className="form-error inline-create__error">{secError}</span>}
+            </div>
+          )}
         </div>
       </div>
 

@@ -68,11 +68,16 @@ export default function NoteView() {
 
   const category = categories.find((c) => c.id === note.categoryId);
   const section = sections.find((s) => s.id === note.sectionId);
-  const updatedAt = note.updatedAt?.toDate
-    ? note.updatedAt.toDate()
-    : note.updatedAt
-    ? new Date(note.updatedAt)
-    : null;
+  const updatedAt = (() => {
+    const ts = note.updatedAt;
+    if (!ts) return null;
+    if (ts instanceof Date) return ts;
+    if (typeof ts.toDate === 'function') return ts.toDate();
+    if (ts._seconds !== undefined) return new Date(ts._seconds * 1000);
+    if (ts.seconds !== undefined) return new Date(ts.seconds * 1000);
+    return null;
+  })();
+  const validDate = updatedAt && !isNaN(updatedAt);
   const syncColor = note.syncStatus === 'SYNCED' ? '#4CAF50' : note.syncStatus === 'FAILED' ? '#f44336' : '#FF9800';
 
   return (
@@ -116,7 +121,7 @@ export default function NoteView() {
           </header>
 
           <div className="note-view__meta">
-            {updatedAt && (
+            {validDate && (
               <span className="note-view__meta-item">
                 <FiClock /> Updated {formatDistanceToNow(updatedAt, { addSuffix: true })}
               </span>
