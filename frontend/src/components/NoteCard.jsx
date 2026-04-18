@@ -2,12 +2,18 @@ import { Link } from 'react-router-dom';
 import { FiClock, FiTag, FiGitBranch, FiTrash2, FiEdit } from 'react-icons/fi';
 import { formatDistanceToNow } from 'date-fns';
 
+function toDate(ts) {
+  if (!ts) return null;
+  if (ts instanceof Date) return ts;
+  if (typeof ts.toDate === 'function') return ts.toDate();
+  if (ts._seconds !== undefined) return new Date(ts._seconds * 1000);
+  if (ts.seconds !== undefined) return new Date(ts.seconds * 1000);
+  return null;
+}
+
 export default function NoteCard({ note, onDelete }) {
-  const updatedAt = note.updatedAt?.toDate
-    ? note.updatedAt.toDate()
-    : note.updatedAt
-    ? new Date(note.updatedAt)
-    : null;
+  const updatedAt = toDate(note.updatedAt);
+  const validDate = updatedAt && !isNaN(updatedAt);
 
   const syncColor = note.syncStatus === 'SYNCED' ? '#4CAF50' : note.syncStatus === 'FAILED' ? '#f44336' : '#FF9800';
 
@@ -42,7 +48,7 @@ export default function NoteCard({ note, onDelete }) {
       )}
 
       <div className="note-card__meta">
-        {updatedAt && (
+        {validDate && (
           <span className="note-card__date">
             <FiClock /> {formatDistanceToNow(updatedAt, { addSuffix: true })}
           </span>
