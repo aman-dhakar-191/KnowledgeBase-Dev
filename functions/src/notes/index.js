@@ -38,8 +38,10 @@ router.get('/', async (req, res) => {
     if (req.query.categoryId) query = query.where('categoryId', '==', req.query.categoryId);
     if (req.query.sectionId) query = query.where('sectionId', '==', req.query.sectionId);
 
-    const snapshot = await query.orderBy('updatedAt', 'desc').get();
-    const notes = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    const snapshot = await query.get();
+    const notes = snapshot.docs
+      .map((doc) => ({ id: doc.id, ...doc.data() }))
+      .sort((a, b) => (b.updatedAt?.toMillis?.() ?? 0) - (a.updatedAt?.toMillis?.() ?? 0));
 
     // Client-side tag filter (Firestore limitation)
     let filtered = notes;

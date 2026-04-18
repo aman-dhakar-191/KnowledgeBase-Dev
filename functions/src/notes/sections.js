@@ -8,8 +8,11 @@ router.get('/', async (req, res) => {
   try {
     let query = db.collection('sections');
     if (req.query.categoryId) query = query.where('categoryId', '==', req.query.categoryId);
-    const snapshot = await query.orderBy('order').get();
-    return res.json({ success: true, data: snapshot.docs.map((d) => ({ id: d.id, ...d.data() })) });
+    const snapshot = await query.get();
+    const sections = snapshot.docs
+      .map((d) => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    return res.json({ success: true, data: sections });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }
