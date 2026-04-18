@@ -206,6 +206,16 @@ input, select, textarea { font-family: inherit; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .loading-spinner__text { color: var(--color-text-muted); font-size: 0.9rem; }
 
+.connection-status { display: inline-flex; align-items: center; gap: 5px; font-size: 0.72rem; font-weight: 500; padding: 3px 8px; border-radius: 9999px; white-space: nowrap; }
+.connection-status__dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.connection-status--online { background: #f0fdf4; color: #15803d; }
+.connection-status--online .connection-status__dot { background: #22c55e; }
+.connection-status--offline { background: #fee2e2; color: #b91c1c; }
+.connection-status--offline .connection-status__dot { background: #ef4444; }
+.connection-status--checking { background: #f1f5f9; color: var(--color-text-muted); }
+.connection-status--checking .connection-status__dot { background: #94a3b8; animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
 .error-banner { background: #fee2e2; color: var(--color-danger); border: 1px solid #fca5a5; border-radius: var(--border-radius); padding: 12px 16px; margin-bottom: 20px; font-size: 0.9rem; }
 
 .note-view__content h1, .note-view__content h2, .note-view__content h3, .note-view__content h4 { margin-top: 1.5em; margin-bottom: 0.5em; font-weight: 700; }

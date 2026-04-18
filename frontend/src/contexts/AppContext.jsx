@@ -10,6 +10,7 @@ export function AppProvider({ children }) {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [apiStatus, setApiStatus] = useState('checking');
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSection, setSelectedSection] = useState(null);
   const [selectedTags, setSelectedTags] = useState([]);
@@ -29,8 +30,10 @@ export function AppProvider({ children }) {
       setSections(sects.data || sects || []);
       setTags(tagsData.data || tagsData || []);
       setNotes(notesData.data || notesData || []);
+      setApiStatus('online');
     } catch (err) {
       setError(err.message);
+      setApiStatus('offline');
     } finally {
       setLoading(false);
     }
@@ -88,6 +91,7 @@ export function AppProvider({ children }) {
         toggleTag,
         searchQuery,
         setSearchQuery,
+        apiStatus,
         refreshNotes,
         loadInitialData,
         setNotes,
