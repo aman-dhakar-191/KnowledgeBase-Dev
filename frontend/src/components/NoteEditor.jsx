@@ -1,14 +1,15 @@
 import { useState, useRef } from 'react';
-import { FiX, FiCheck, FiImage } from 'react-icons/fi';
+import { FiX, FiCheck, FiImage, FiLock } from 'react-icons/fi';
 import MDEditor from '@uiw/react-md-editor';
 import { useApp } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 import { createCategory, createSection, uploadImage } from '../services/api';
 
 const CREATE_NEW = '__create_new__';
 
 function getInitialForm(initialNote) {
   if (!initialNote) {
-    return { title: '', content: '', categoryId: '', sectionId: '', tags: [] };
+    return { title: '', content: '', categoryId: '', sectionId: '', tags: [], isPrivate: false };
   }
   return {
     title: initialNote.title || '',
@@ -16,11 +17,13 @@ function getInitialForm(initialNote) {
     categoryId: initialNote.categoryId || '',
     sectionId: initialNote.sectionId || '',
     tags: initialNote.tags || [],
+    isPrivate: Boolean(initialNote.isPrivate),
   };
 }
 
 export default function NoteEditor({ initialNote, onSave, onCancel, isSaving }) {
   const { categories, sections, setCategories, setSections } = useApp();
+  const { isAdmin } = useAuth();
   const [form, setForm] = useState(() => getInitialForm(initialNote));
   const [tagInput, setTagInput] = useState('');
   const [errors, setErrors] = useState({});
@@ -322,6 +325,19 @@ export default function NoteEditor({ initialNote, onSave, onCancel, isSaving }) 
           />
         </div>
       </div>
+
+      {isAdmin && (
+        <label className="private-toggle">
+          <input
+            type="checkbox"
+            checked={form.isPrivate}
+            onChange={(e) => setForm((p) => ({ ...p, isPrivate: e.target.checked }))}
+            disabled={isSaving}
+          />
+          <FiLock />
+          <span>Private — only visible to you</span>
+        </label>
+      )}
 
       <div className="note-editor__actions">
         <button type="button" className="btn btn--secondary" onClick={onCancel} disabled={isSaving}>

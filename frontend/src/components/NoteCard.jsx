@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FiClock, FiTag, FiGitBranch, FiTrash2, FiEdit } from 'react-icons/fi';
+import { FiClock, FiTag, FiGitBranch, FiTrash2, FiEdit, FiLock } from 'react-icons/fi';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -23,6 +23,7 @@ export default function NoteCard({ note, onDelete }) {
     <article className="note-card">
       <div className="note-card__header">
         <Link to={`/note/${note.id}`} className="note-card__title">
+          {note.isPrivate && <FiLock className="note-card__private-icon" title="Private" />}
           {note.title}
         </Link>
         {isAdmin && (

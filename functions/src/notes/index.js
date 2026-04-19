@@ -3,7 +3,7 @@ const router = express.Router();
 const { db } = require('../services/firestore');
 const { saveFileToGitHub, deleteFileFromGitHub } = require('../services/github');
 const admin = require('firebase-admin');
-const { requireAuth, requireAdmin } = require('../middleware/auth');
+const { requireAuth, requireAdmin, resolveAdmin } = require('../middleware/auth');
 
 const DEFAULT_TAG_COLOR = '#4CAF50';
 
@@ -32,7 +32,7 @@ async function syncToGitHub(note) {
 }
 
 // GET /notes
-router.get('/', async (req, res) => {
+router.get('/', resolveAdmin, async (req, res) => {
   try {
     let query = db.collection('notes').where('isDeleted', '==', false);
 
@@ -40,11 +40,13 @@ router.get('/', async (req, res) => {
     if (req.query.sectionId) query = query.where('sectionId', '==', req.query.sectionId);
 
     const snapshot = await query.get();
-    const notes = snapshot.docs
+    let notes = snapshot.docs
       .map((doc) => ({ id: doc.id, ...doc.data() }))
       .sort((a, b) => (b.updatedAt?.toMillis?.() ?? 0) - (a.updatedAt?.toMillis?.() ?? 0));
 
-    // Client-side tag filter (Firestore limitation)
+    // Hide private notes from non-admin users
+    if (!req.isAdmin) notes = notes.filter((n) => !n.isPrivate);
+
     let filtered = notes;
     if (req.query.tags) {
       const tags = req.query.tags.split(',');
@@ -65,11 +67,15 @@ router.get('/', async (req, res) => {
 });
 
 // GET /notes/:id
-router.get('/:id', async (req, res) => {
+router.get('/:id', resolveAdmin, async (req, res) => {
   try {
     const doc = await db.collection('notes').doc(req.params.id).get();
     if (!doc.exists) return res.status(404).json({ success: false, message: 'Note not found' });
-    return res.json({ success: true, data: { id: doc.id, ...doc.data() } });
+    const data = { id: doc.id, ...doc.data() };
+    if (data.isPrivate && !req.isAdmin) {
+      return res.status(403).json({ success: false, message: 'This note is private' });
+    }
+    return res.json({ success: true, data });
   } catch (err) {
     console.error('GET /notes/:id error:', err);
     return res.status(500).json({ success: false, message: err.message });
@@ -77,9 +83,9 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /notes
-router.post('/', requireAuth, async (req, res) => {
+router.post('/', requireAuth, resolveAdmin, async (req, res) => {
   try {
-    const { title, content, categoryId, sectionId, tags } = req.body;
+    const { title, content, categoryId, sectionId, tags, isPrivate } = req.body;
 
     if (!title?.trim()) return res.status(400).json({ success: false, message: 'Title is required' });
     if (!content?.trim()) return res.status(400).json({ success: false, message: 'Content is required' });
@@ -99,6 +105,7 @@ router.post('/', requireAuth, async (req, res) => {
       updatedAt: now,
       version: 1,
       isDeleted: false,
+      isPrivate: req.isAdmin ? Boolean(isPrivate) : false,
       syncStatus: 'PENDING',
       githubPath: '',
     };
@@ -138,7 +145,7 @@ router.post('/', requireAuth, async (req, res) => {
 // PUT /notes/:id
 router.put('/:id', requireAdmin, async (req, res) => {
   try {
-    const { title, content, categoryId, sectionId, tags } = req.body;
+    const { title, content, categoryId, sectionId, tags, isPrivate } = req.body;
     const noteRef = db.collection('notes').doc(req.params.id);
     const noteDoc = await noteRef.get();
 
@@ -155,6 +162,7 @@ router.put('/:id', requireAdmin, async (req, res) => {
       categoryId,
       sectionId: sectionId || '',
       tags: tags || [],
+      isPrivate: Boolean(isPrivate),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       version: (existing.version || 1) + 1,
       syncStatus: 'PENDING',
