@@ -2,11 +2,12 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const { admin } = require('./services/firestore');
+const { requireAdmin } = require('./middleware/auth');
 
-const MAX_BYTES = 10 * 1024 * 1024; // 10 MB original file
+const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 
 // POST /upload  { filename, contentType, data: base64string }
-router.post('/', async (req, res) => {
+router.post('/', requireAdmin, async (req, res) => {
   try {
     const { filename, contentType, data } = req.body;
     if (!filename || !data) {

@@ -3,6 +3,7 @@ const router = express.Router();
 const { db } = require('../services/firestore');
 const { saveFileToGitHub, deleteFileFromGitHub } = require('../services/github');
 const admin = require('firebase-admin');
+const { requireAdmin } = require('../middleware/auth');
 
 const DEFAULT_TAG_COLOR = '#4CAF50';
 
@@ -76,7 +77,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /notes
-router.post('/', async (req, res) => {
+router.post('/', requireAdmin, async (req, res) => {
   try {
     const { title, content, categoryId, sectionId, tags } = req.body;
 
@@ -135,7 +136,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /notes/:id
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireAdmin, async (req, res) => {
   try {
     const { title, content, categoryId, sectionId, tags } = req.body;
     const noteRef = db.collection('notes').doc(req.params.id);
@@ -190,7 +191,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE /notes/:id (soft delete)
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAdmin, async (req, res) => {
   try {
     const noteRef = db.collection('notes').doc(req.params.id);
     const noteDoc = await noteRef.get();

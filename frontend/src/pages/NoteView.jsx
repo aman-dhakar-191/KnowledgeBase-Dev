@@ -7,11 +7,13 @@ import NoteEditor from '../components/NoteEditor';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { getNoteById, updateNote, deleteNote } from '../services/api';
 import { useApp } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function NoteView() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { categories, sections, refreshNotes } = useApp();
+  const { isAdmin } = useAuth();
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -110,14 +112,16 @@ export default function NoteView() {
         <article className="note-view">
           <header className="note-view__header">
             <h1 className="note-view__title">{note.title}</h1>
-            <div className="note-view__actions">
-              <button className="btn btn--outline btn--sm" onClick={() => setEditing(true)}>
-                <FiEdit /> Edit
-              </button>
-              <button className="btn btn--danger btn--sm" onClick={handleDelete}>
-                <FiTrash2 /> Delete
-              </button>
-            </div>
+            {isAdmin && (
+              <div className="note-view__actions">
+                <button className="btn btn--outline btn--sm" onClick={() => setEditing(true)}>
+                  <FiEdit /> Edit
+                </button>
+                <button className="btn btn--danger btn--sm" onClick={handleDelete}>
+                  <FiTrash2 /> Delete
+                </button>
+              </div>
+            )}
           </header>
 
           <div className="note-view__meta">

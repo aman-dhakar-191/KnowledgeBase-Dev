@@ -2,14 +2,26 @@
 // to the Cloud Function automatically — no VITE_FUNCTIONS_URL needed in production.
 // For local development with the Firebase Emulator set VITE_FUNCTIONS_URL in .env.local:
 //   VITE_FUNCTIONS_URL=http://127.0.0.1:5001/<your-project-id>/us-central1/api
+import { auth } from './firebase';
+
 const API_BASE_URL = import.meta.env.VITE_FUNCTIONS_URL || '/api';
+const WRITE_METHODS = new Set(['POST', 'PUT', 'DELETE', 'PATCH']);
+
+async function getAuthHeader(method) {
+  if (!WRITE_METHODS.has((method || 'GET').toUpperCase())) return {};
+  const user = auth.currentUser;
+  if (!user) return {};
+  const token = await user.getIdToken();
+  return { Authorization: `Bearer ${token}` };
+}
 
 async function request(path, options = {}) {
   const url = `${API_BASE_URL}${path}`;
-  const defaults = {
-    headers: { 'Content-Type': 'application/json' },
+  const authHeader = await getAuthHeader(options.method);
+  const config = {
+    ...options,
+    headers: { 'Content-Type': 'application/json', ...authHeader, ...options.headers },
   };
-  const config = { ...defaults, ...options, headers: { ...defaults.headers, ...options.headers } };
   let response;
   try {
     response = await fetch(url, config);

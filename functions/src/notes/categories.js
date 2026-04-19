@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { db } = require('../services/firestore');
 const admin = require('firebase-admin');
+const { requireAdmin } = require('../middleware/auth');
 
 // GET /categories
 router.get('/', async (req, res) => {
@@ -14,7 +15,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST /categories
-router.post('/', async (req, res) => {
+router.post('/', requireAdmin, async (req, res) => {
   try {
     const { name, description } = req.body;
     if (!name?.trim()) return res.status(400).json({ success: false, message: 'Name is required' });
@@ -33,7 +34,7 @@ router.post('/', async (req, res) => {
 });
 
 // DELETE /categories/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAdmin, async (req, res) => {
   try {
     await db.collection('categories').doc(req.params.id).delete();
     return res.json({ success: true, message: 'Category deleted' });
