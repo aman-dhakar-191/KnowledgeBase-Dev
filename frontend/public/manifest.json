@@ -1,0 +1,43 @@
+{
+  "name": "KnowledgeBase",
+  "short_name": "KB",
+  "description": "Your personal knowledge hub — organized, searchable, and version-controlled.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait-primary",
+  "lang": "en-US",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Note",
+      "short_name": "New",
+      "description": "Create a new note",
+      "url": "/new",
+      "icons": [{ "src": "/icons/shortcut-new.svg", "sizes": "any", "type": "image/svg+xml" }]
+    },
+    {
+      "name": "My Notes",
+      "short_name": "Notes",
+      "description": "View all notes",
+      "url": "/notes",
+      "icons": [{ "src": "/icons/shortcut-notes.svg", "sizes": "any", "type": "image/svg+xml" }]
+    }
+  ]
+}
