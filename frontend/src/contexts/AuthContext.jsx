@@ -1,5 +1,11 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { onAuthStateChanged, signInWithPopup, signOut as fbSignOut } from 'firebase/auth';
+import {
+  onAuthStateChanged,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+  signOut as fbSignOut,
+} from 'firebase/auth';
 import { auth, googleProvider } from '../services/firebase';
 
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
@@ -11,6 +17,8 @@ export function AuthProvider({ children }) {
   const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
+    // Resolve any pending redirect sign-in (onAuthStateChanged fires automatically after)
+    getRedirectResult(auth).catch(() => {});
     return onAuthStateChanged(auth, (u) => {
       setUser(u);
       setAuthLoading(false);
@@ -18,7 +26,19 @@ export function AuthProvider({ children }) {
   }, []);
 
   const isAdmin = Boolean(user && ADMIN_EMAIL && user.email === ADMIN_EMAIL);
-  const signIn = () => signInWithPopup(auth, googleProvider);
+
+  const signIn = async () => {
+    try {
+      // Popup works on desktop and Chrome for Android
+      await signInWithPopup(auth, googleProvider);
+    } catch (err) {
+      // Fall back to redirect only if popup was actually blocked
+      if (err.code === 'auth/popup-blocked' || err.code === 'auth/cancelled-popup-request') {
+        await signInWithRedirect(auth, googleProvider);
+      }
+    }
+  };
+
   const signOut = () => fbSignOut(auth);
 
   return (

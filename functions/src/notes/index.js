@@ -3,7 +3,7 @@ const router = express.Router();
 const { db } = require('../services/firestore');
 const { saveFileToGitHub, deleteFileFromGitHub } = require('../services/github');
 const admin = require('firebase-admin');
-const { requireAdmin } = require('../middleware/auth');
+const { requireAuth, requireAdmin } = require('../middleware/auth');
 
 const DEFAULT_TAG_COLOR = '#4CAF50';
 
@@ -77,7 +77,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /notes
-router.post('/', requireAdmin, async (req, res) => {
+router.post('/', requireAuth, async (req, res) => {
   try {
     const { title, content, categoryId, sectionId, tags } = req.body;
 

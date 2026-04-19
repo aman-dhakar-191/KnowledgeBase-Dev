@@ -33,7 +33,7 @@ export default function Header({ onMenuClick }) {
         <SearchBar />
       </div>
       <div className="header__right">
-        {isAdmin && (
+        {user && (
           <Link to="/new" className="btn btn--primary btn--sm">
             <FiPlus /> New Note
           </Link>
