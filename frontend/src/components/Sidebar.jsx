@@ -2,12 +2,14 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { FiHome, FiFileText, FiPlusCircle, FiChevronDown, FiChevronRight, FiTag, FiX, FiPlus } from 'react-icons/fi';
 import { useState } from 'react';
 import { useApp } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 import Modal from './Modal';
 import { createCategory } from '../services/api';
 
 export default function Sidebar({ isOpen, onClose }) {
   const navigate = useNavigate();
   const { categories, sections, tags, selectedCategory, setSelectedCategory, selectedSection, setSelectedSection, selectedTags, toggleTag, setCategories } = useApp();
+  const { user, isAdmin } = useAuth();
   const [expandedCats, setExpandedCats] = useState({});
   const [catModal, setCatModal] = useState(false);
   const [catForm, setCatForm] = useState({ name: '', description: '' });
@@ -78,21 +80,25 @@ export default function Sidebar({ isOpen, onClose }) {
           <NavLink to="/notes" className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`} onClick={onClose}>
             <FiFileText /> <span>All Notes</span>
           </NavLink>
-          <NavLink to="/new" className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`} onClick={onClose}>
-            <FiPlusCircle /> <span>New Note</span>
-          </NavLink>
+          {user && (
+            <NavLink to="/new" className={({ isActive }) => `sidebar__link ${isActive ? 'sidebar__link--active' : ''}`} onClick={onClose}>
+              <FiPlusCircle /> <span>New Note</span>
+            </NavLink>
+          )}
         </nav>
 
         <div className="sidebar__section-title">
           <span>Categories</span>
-          <button
-            className="sidebar__add-btn"
-            onClick={() => { setCatModal(true); setFormError(''); }}
-            aria-label="Add category"
-            title="Add category"
-          >
-            <FiPlus />
-          </button>
+          {isAdmin && (
+            <button
+              className="sidebar__add-btn"
+              onClick={() => { setCatModal(true); setFormError(''); }}
+              aria-label="Add category"
+              title="Add category"
+            >
+              <FiPlus />
+            </button>
+          )}
         </div>
         <ul className="sidebar__categories">
           {categories.map((cat) => {

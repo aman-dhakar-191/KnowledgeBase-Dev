@@ -16,7 +16,7 @@ export default function NotesList() {
     selectedTags, toggleTag,
     loading, error, refreshNotes,
   } = useApp();
-  const { isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [showFilters, setShowFilters] = useState(false);
 
   // Sync URL params into context
@@ -60,7 +60,7 @@ export default function NotesList() {
           >
             <FiFilter /> Filters {hasFilters && <span className="badge">{[selectedCategory, selectedSection, ...selectedTags].filter(Boolean).length}</span>}
           </button>
-          <Link to="/new" className="btn btn--primary btn--sm">+ New Note</Link>
+          {user && <Link to="/new" className="btn btn--primary btn--sm">+ New Note</Link>}
         </div>
       </div>
 
