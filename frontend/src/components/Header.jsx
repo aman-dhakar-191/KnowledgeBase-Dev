@@ -53,7 +53,7 @@ export default function Header({ onMenuClick }) {
       </div>
       <div className="header__right">
         {user && (
-          <Link to="/new" className="btn btn--primary btn--sm">
+          <Link to="/new" className="btn btn--primary btn--sm header__new-note-btn">
             <FiPlus /> New Note
           </Link>
         )}
