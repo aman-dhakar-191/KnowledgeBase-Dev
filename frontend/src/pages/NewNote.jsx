@@ -9,13 +9,13 @@ import { useAuth } from '../contexts/AuthContext';
 export default function NewNote() {
   const navigate = useNavigate();
   const { refreshNotes, loading: appLoading } = useApp();
-  const { isAdmin, authLoading } = useAuth();
+  const { user, authLoading } = useAuth();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (!authLoading && !isAdmin) navigate('/', { replace: true });
-  }, [authLoading, isAdmin, navigate]);
+    if (!authLoading && !user) navigate('/', { replace: true });
+  }, [authLoading, user, navigate]);
 
   const handleSave = async (formData) => {
     setSaving(true);
@@ -32,7 +32,7 @@ export default function NewNote() {
   };
 
   if (appLoading || authLoading) return <LoadingSpinner message="Loading..." />;
-  if (!isAdmin) return null;
+  if (!user) return null;
 
   return (
     <div className="page">

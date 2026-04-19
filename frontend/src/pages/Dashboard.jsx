@@ -10,7 +10,7 @@ import { createCategory, createSection, createTag, deleteNote } from '../service
 
 export default function Dashboard() {
   const { categories, sections, tags, notes, loading, error, setCategories, setSections, setTags, refreshNotes } = useApp();
-  const { isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [catModal, setCatModal] = useState(false);
   const [secModal, setSecModal] = useState(false);
   const [tagModal, setTagModal] = useState(false);
@@ -100,7 +100,7 @@ export default function Dashboard() {
           <h1 className="page__title">📚 Knowledge Base</h1>
           <p className="page__subtitle">Your personal knowledge hub — organized, searchable, and version-controlled.</p>
         </div>
-        {isAdmin && (
+        {user && (
           <Link to="/new" className="btn btn--primary">
             <FiPlus /> New Note
           </Link>
