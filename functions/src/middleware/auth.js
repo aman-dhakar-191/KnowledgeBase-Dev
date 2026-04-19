@@ -32,4 +32,16 @@ async function requireAdmin(req, res, next) {
   }
 }
 
-module.exports = { requireAuth, requireAdmin };
+// Silently resolves auth — sets req.isAdmin without blocking the request
+async function resolveAdmin(req, _res, next) {
+  req.isAdmin = false;
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) return next();
+  try {
+    const decoded = await admin.auth().verifyIdToken(authHeader.slice(7));
+    req.isAdmin = Boolean(ADMIN_EMAIL && decoded.email === ADMIN_EMAIL);
+  } catch { /* ignore */ }
+  next();
+}
+
+module.exports = { requireAuth, requireAdmin, resolveAdmin };
