@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useState, lazy, Suspense } from 'react';
 import { AppProvider } from './contexts/AppContext';
+import { AuthProvider } from './contexts/AuthContext';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import LoadingSpinner from './components/LoadingSpinner';
@@ -16,6 +17,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <AuthProvider>
       <AppProvider>
         <div className="app">
           <Header onMenuClick={() => setSidebarOpen((v) => !v)} />
@@ -34,6 +36,7 @@ export default function App() {
           </div>
         </div>
       </AppProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

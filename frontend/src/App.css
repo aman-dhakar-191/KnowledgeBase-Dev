@@ -298,3 +298,17 @@ input, select, textarea { font-family: inherit; }
 .w-md-editor { max-width: 100% !important; box-sizing: border-box; }
 .w-md-editor-toolbar { overflow-x: auto; scrollbar-width: thin; }
 .w-md-editor-content { overflow-x: auto; }
+
+/* ── Auth / Header user ── */
+.header__user {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.header__avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border);
+}

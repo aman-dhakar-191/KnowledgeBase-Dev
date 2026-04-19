@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { FiClock, FiTag, FiGitBranch, FiTrash2, FiEdit } from 'react-icons/fi';
 import { formatDistanceToNow } from 'date-fns';
+import { useAuth } from '../contexts/AuthContext';
 
 function toDate(ts) {
   if (!ts) return null;
@@ -12,6 +13,7 @@ function toDate(ts) {
 }
 
 export default function NoteCard({ note, onDelete }) {
+  const { isAdmin } = useAuth();
   const updatedAt = toDate(note.updatedAt);
   const validDate = updatedAt && !isNaN(updatedAt);
 
@@ -23,21 +25,23 @@ export default function NoteCard({ note, onDelete }) {
         <Link to={`/note/${note.id}`} className="note-card__title">
           {note.title}
         </Link>
-        <div className="note-card__actions">
-          <Link to={`/note/${note.id}`} className="note-card__action-btn" aria-label="Edit note" title="Edit">
-            <FiEdit />
-          </Link>
-          {onDelete && (
-            <button
-              className="note-card__action-btn note-card__action-btn--danger"
-              onClick={() => onDelete(note.id)}
-              aria-label="Delete note"
-              title="Delete"
-            >
-              <FiTrash2 />
-            </button>
-          )}
-        </div>
+        {isAdmin && (
+          <div className="note-card__actions">
+            <Link to={`/note/${note.id}`} className="note-card__action-btn" aria-label="Edit note" title="Edit">
+              <FiEdit />
+            </Link>
+            {onDelete && (
+              <button
+                className="note-card__action-btn note-card__action-btn--danger"
+                onClick={() => onDelete(note.id)}
+                aria-label="Delete note"
+                title="Delete"
+              >
+                <FiTrash2 />
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {note.content && (

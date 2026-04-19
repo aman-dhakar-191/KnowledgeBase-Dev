@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { FiPlus, FiFileText, FiFolder, FiTag } from 'react-icons/fi';
 import { useState } from 'react';
 import { useApp } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 import NoteCard from '../components/NoteCard';
 import Modal from '../components/Modal';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -9,6 +10,7 @@ import { createCategory, createSection, createTag, deleteNote } from '../service
 
 export default function Dashboard() {
   const { categories, sections, tags, notes, loading, error, setCategories, setSections, setTags, refreshNotes } = useApp();
+  const { isAdmin } = useAuth();
   const [catModal, setCatModal] = useState(false);
   const [secModal, setSecModal] = useState(false);
   const [tagModal, setTagModal] = useState(false);
@@ -98,9 +100,11 @@ export default function Dashboard() {
           <h1 className="page__title">📚 Knowledge Base</h1>
           <p className="page__subtitle">Your personal knowledge hub — organized, searchable, and version-controlled.</p>
         </div>
-        <Link to="/new" className="btn btn--primary">
-          <FiPlus /> New Note
-        </Link>
+        {isAdmin && (
+          <Link to="/new" className="btn btn--primary">
+            <FiPlus /> New Note
+          </Link>
+        )}
       </div>
 
       {/* Stats */}
@@ -131,9 +135,11 @@ export default function Dashboard() {
       <section className="section">
         <div className="section__header">
           <h2 className="section__title">Categories</h2>
-          <button className="btn btn--outline btn--sm" onClick={() => { setCatModal(true); setFormError(''); }}>
-            <FiPlus /> Add Category
-          </button>
+          {isAdmin && (
+            <button className="btn btn--outline btn--sm" onClick={() => { setCatModal(true); setFormError(''); }}>
+              <FiPlus /> Add Category
+            </button>
+          )}
         </div>
         {categories.length === 0 ? (
           <div className="empty-state">
@@ -164,9 +170,11 @@ export default function Dashboard() {
       <section className="section">
         <div className="section__header">
           <h2 className="section__title">Sections</h2>
-          <button className="btn btn--outline btn--sm" onClick={() => { setSecModal(true); setFormError(''); }}>
-            <FiPlus /> Add Section
-          </button>
+          {isAdmin && (
+            <button className="btn btn--outline btn--sm" onClick={() => { setSecModal(true); setFormError(''); }}>
+              <FiPlus /> Add Section
+            </button>
+          )}
         </div>
         {sections.length === 0 ? (
           <div className="empty-state">
@@ -193,9 +201,11 @@ export default function Dashboard() {
       <section className="section">
         <div className="section__header">
           <h2 className="section__title">Tags</h2>
-          <button className="btn btn--outline btn--sm" onClick={() => { setTagModal(true); setFormError(''); }}>
-            <FiPlus /> Add Tag
-          </button>
+          {isAdmin && (
+            <button className="btn btn--outline btn--sm" onClick={() => { setTagModal(true); setFormError(''); }}>
+              <FiPlus /> Add Tag
+            </button>
+          )}
         </div>
         {tags.length === 0 ? (
           <div className="empty-state">

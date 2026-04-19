@@ -1,15 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NoteEditor from '../components/NoteEditor';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { createNote } from '../services/api';
 import { useApp } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function NewNote() {
   const navigate = useNavigate();
   const { refreshNotes, loading: appLoading } = useApp();
+  const { isAdmin, authLoading } = useAuth();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!authLoading && !isAdmin) navigate('/', { replace: true });
+  }, [authLoading, isAdmin, navigate]);
 
   const handleSave = async (formData) => {
     setSaving(true);
@@ -25,7 +31,8 @@ export default function NewNote() {
     }
   };
 
-  if (appLoading) return <LoadingSpinner message="Loading..." />;
+  if (appLoading || authLoading) return <LoadingSpinner message="Loading..." />;
+  if (!isAdmin) return null;
 
   return (
     <div className="page">

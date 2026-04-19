@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import NoteCard from '../components/NoteCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useApp } from '../contexts/AppContext';
+import { useAuth } from '../contexts/AuthContext';
 import { deleteNote } from '../services/api';
 import { FiFilter, FiX } from 'react-icons/fi';
 
@@ -15,6 +16,7 @@ export default function NotesList() {
     selectedTags, toggleTag,
     loading, error, refreshNotes,
   } = useApp();
+  const { isAdmin } = useAuth();
   const [showFilters, setShowFilters] = useState(false);
 
   // Sync URL params into context
@@ -124,7 +126,7 @@ export default function NotesList() {
       ) : (
         <div className="notes-grid">
           {filteredNotes.map((note) => (
-            <NoteCard key={note.id} note={note} onDelete={handleDelete} />
+            <NoteCard key={note.id} note={note} onDelete={isAdmin ? handleDelete : undefined} />
           ))}
         </div>
       )}

@@ -54,6 +54,13 @@ jobs:
         env:
           VITE_FUNCTIONS_URL: ${{ secrets.VITE_FUNCTIONS_URL }}
           VITE_APP_ENV: ${{ steps.target.outputs.app_env }}
+          VITE_ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
 
       # ---------- Cloud Functions ----------
       - name: Install functions dependencies
@@ -66,11 +73,12 @@ jobs:
 
       - name: Write functions environment file
         run: |
-          cat > functions/.env <<'EOF'
+          cat > functions/.env <<EOF
           GITHUB_TOKEN=${{ secrets.TOKEN_VALUE }}
           GITHUB_OWNER=${{ secrets.OWNER }}
           GITHUB_REPO=${{ secrets.REPO }}
           GITHUB_BRANCH=${{ secrets.BRANCH }}
+          ADMIN_EMAIL=${{ secrets.ADMIN_EMAIL }}
           EOF
       - name: Debug secrets presence
         run: |

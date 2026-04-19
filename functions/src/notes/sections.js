@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { db } = require('../services/firestore');
 const admin = require('firebase-admin');
+const { requireAdmin } = require('../middleware/auth');
 
 // GET /sections
 router.get('/', async (req, res) => {
@@ -19,7 +20,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST /sections
-router.post('/', async (req, res) => {
+router.post('/', requireAdmin, async (req, res) => {
   try {
     const { name, categoryId, order } = req.body;
     if (!name?.trim()) return res.status(400).json({ success: false, message: 'Name is required' });
@@ -35,7 +36,7 @@ router.post('/', async (req, res) => {
 });
 
 // DELETE /sections/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAdmin, async (req, res) => {
   try {
     await db.collection('sections').doc(req.params.id).delete();
     return res.json({ success: true, message: 'Section deleted' });

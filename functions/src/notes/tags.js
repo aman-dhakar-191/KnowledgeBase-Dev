@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { db } = require('../services/firestore');
 const admin = require('firebase-admin');
+const { requireAdmin } = require('../middleware/auth');
 
 // GET /tags
 router.get('/', async (req, res) => {
@@ -14,7 +15,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST /tags
-router.post('/', async (req, res) => {
+router.post('/', requireAdmin, async (req, res) => {
   try {
     const { name, color } = req.body;
     if (!name?.trim()) return res.status(400).json({ success: false, message: 'Name is required' });
