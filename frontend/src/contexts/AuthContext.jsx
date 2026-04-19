@@ -9,7 +9,6 @@ import {
 import { auth, googleProvider } from '../services/firebase';
 
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
-const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
 
 const AuthContext = createContext(null);
 
@@ -18,7 +17,7 @@ export function AuthProvider({ children }) {
   const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
-    // Pick up the result when returning from a redirect sign-in on mobile
+    // Resolve any pending redirect sign-in (onAuthStateChanged fires automatically after)
     getRedirectResult(auth).catch(() => {});
     return onAuthStateChanged(auth, (u) => {
       setUser(u);
@@ -27,8 +26,19 @@ export function AuthProvider({ children }) {
   }, []);
 
   const isAdmin = Boolean(user && ADMIN_EMAIL && user.email === ADMIN_EMAIL);
-  const signIn = () =>
-    isMobile ? signInWithRedirect(auth, googleProvider) : signInWithPopup(auth, googleProvider);
+
+  const signIn = async () => {
+    try {
+      // Popup works on desktop and Chrome for Android
+      await signInWithPopup(auth, googleProvider);
+    } catch (err) {
+      // Fall back to redirect only if popup was actually blocked
+      if (err.code === 'auth/popup-blocked' || err.code === 'auth/cancelled-popup-request') {
+        await signInWithRedirect(auth, googleProvider);
+      }
+    }
+  };
+
   const signOut = () => fbSignOut(auth);
 
   return (
