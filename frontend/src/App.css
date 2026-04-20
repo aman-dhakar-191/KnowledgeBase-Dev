@@ -501,3 +501,18 @@ input, select, textarea { font-family: inherit; }
   border-radius: 99px;
   font-size: 0.75rem;
 }
+
+/* Ad Banner */
+.ad-banner {
+  width: 100%;
+  max-width: 800px;
+  margin: 24px auto 0;
+  padding: 0 16px 24px;
+  min-height: 90px;
+}
+@media (max-width: 480px) {
+  .ad-banner {
+    padding: 0 8px 16px;
+    min-height: 60px;
+  }
+}
