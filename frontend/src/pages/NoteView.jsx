@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
-import { FiEdit, FiTrash2, FiArrowLeft, FiGitBranch, FiClock, FiLock } from 'react-icons/fi';
+import { FiEdit, FiTrash2, FiArrowLeft, FiGitBranch, FiClock, FiLock, FiUser } from 'react-icons/fi';
 import { formatDistanceToNow } from 'date-fns';
 import NoteEditor from '../components/NoteEditor';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -137,6 +137,11 @@ export default function NoteView() {
               <FiGitBranch /> {note.syncStatus || 'PENDING'}
             </span>
             {note.version && <span className="note-view__meta-item">Version {note.version}</span>}
+            {note.ownerEmail && (
+              <span className="note-view__meta-item note-view__owner">
+                <FiUser /> {note.ownerEmail}
+              </span>
+            )}
             {note.isPrivate && (
               <span className="note-view__meta-item note-view__private-badge">
                 <FiLock /> Private

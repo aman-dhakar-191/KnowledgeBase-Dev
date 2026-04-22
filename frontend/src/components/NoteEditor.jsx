@@ -322,6 +322,8 @@ export default function NoteEditor({ initialNote, onSave, onCancel, isSaving }) 
             onChange={(val) => handleChange('content', val || '')}
             height={400}
             preview="edit"
+            visibleDragbar={false}
+            textareaProps={{ style: { verticalAlign: 'top' } }}
           />
         </div>
       </div>

@@ -517,3 +517,36 @@ input, select, textarea { font-family: inherit; }
     min-height: 60px;
   }
 }
+
+/* Owner display */
+.note-view__owner {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.note-card__owner {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+/* MDEditor fixes */
+.w-md-editor-text-textarea,
+.w-md-editor-text-input {
+  vertical-align: top !important;
+  padding-top: 10px !important;
+}
+.w-md-editor-toolbar {
+  flex-wrap: wrap !important;
+  height: auto !important;
+}
+@media (max-width: 600px) {
+  .w-md-editor-toolbar ul { flex-wrap: wrap; gap: 2px; }
+  .w-md-editor-toolbar li > button { padding: 4px; font-size: 14px; }
+}
