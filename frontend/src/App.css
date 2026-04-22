@@ -369,10 +369,11 @@ input, select, textarea { font-family: inherit; }
 .header__avatar--fallback { width: 30px; height: 30px; font-size: 0.85rem; }
 
 .profile-card {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
+  position: fixed;
+  top: calc(var(--header-height) + 4px);
+  right: 8px;
   width: 270px;
+  max-width: calc(100vw - 16px);
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
@@ -500,4 +501,19 @@ input, select, textarea { font-family: inherit; }
   padding: 2px 10px;
   border-radius: 99px;
   font-size: 0.75rem;
+}
+
+/* Ad Banner */
+.ad-banner {
+  width: 100%;
+  max-width: 800px;
+  margin: 24px auto 0;
+  padding: 0 16px 24px;
+  min-height: 90px;
+}
+@media (max-width: 480px) {
+  .ad-banner {
+    padding: 0 8px 16px;
+    min-height: 60px;
+  }
 }

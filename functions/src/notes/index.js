@@ -108,6 +108,8 @@ router.post('/', requireAuth, resolveAdmin, async (req, res) => {
       isPrivate: req.isAdmin ? Boolean(isPrivate) : false,
       syncStatus: 'PENDING',
       githubPath: '',
+      ownerId: req.user.uid,
+      ownerEmail: req.user.email || '',
     };
 
     noteData.githubPath = buildGithubPath({ ...noteData, id: noteId });
@@ -142,8 +144,8 @@ router.post('/', requireAuth, resolveAdmin, async (req, res) => {
   }
 });
 
-// PUT /notes/:id
-router.put('/:id', requireAdmin, async (req, res) => {
+// PUT /notes/:id — owner or admin can edit
+router.put('/:id', requireAuth, resolveAdmin, async (req, res) => {
   try {
     const { title, content, categoryId, sectionId, tags, isPrivate } = req.body;
     const noteRef = db.collection('notes').doc(req.params.id);
@@ -151,18 +153,24 @@ router.put('/:id', requireAdmin, async (req, res) => {
 
     if (!noteDoc.exists) return res.status(404).json({ success: false, message: 'Note not found' });
 
+    const existing = noteDoc.data();
+    const isOwner = existing.ownerId && req.user.uid === existing.ownerId;
+    if (!isOwner && !req.isAdmin) {
+      return res.status(403).json({ success: false, message: 'You can only edit your own notes' });
+    }
+
     if (!title?.trim()) return res.status(400).json({ success: false, message: 'Title is required' });
     if (!content?.trim()) return res.status(400).json({ success: false, message: 'Content is required' });
     if (!categoryId) return res.status(400).json({ success: false, message: 'Category is required' });
 
-    const existing = noteDoc.data();
     const updates = {
       title: title.trim(),
       content: content.trim(),
       categoryId,
       sectionId: sectionId || '',
       tags: tags || [],
-      isPrivate: Boolean(isPrivate),
+      // Only admin can change the private flag
+      isPrivate: req.isAdmin ? Boolean(isPrivate) : Boolean(existing.isPrivate),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       version: (existing.version || 1) + 1,
       syncStatus: 'PENDING',
@@ -198,7 +206,7 @@ router.put('/:id', requireAdmin, async (req, res) => {
   }
 });
 
-// DELETE /notes/:id (soft delete)
+// DELETE /notes/:id (soft delete — admin only)
 router.delete('/:id', requireAdmin, async (req, res) => {
   try {
     const noteRef = db.collection('notes').doc(req.params.id);

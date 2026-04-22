@@ -1,6 +1,6 @@
 import { FiMenu, FiPlus, FiLogIn, FiLogOut, FiShield } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import SearchBar from './SearchBar';
 import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -16,7 +16,9 @@ export default function Header({ onMenuClick }) {
   const { user, isAdmin, signIn, signOut } = useAuth();
   const { label, className } = STATUS_CONFIG[apiStatus] ?? STATUS_CONFIG.checking;
   const [profileOpen, setProfileOpen] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
   const profileRef = useRef(null);
+  const handleAvatarError = useCallback(() => setAvatarError(true), []);
 
   // Close card when clicking outside
   useEffect(() => {
@@ -64,12 +66,13 @@ export default function Header({ onMenuClick }) {
               onClick={() => setProfileOpen((v) => !v)}
               aria-label="Profile"
             >
-              {user.photoURL ? (
+              {user.photoURL && !avatarError ? (
                 <img
                   className="header__avatar"
                   src={user.photoURL}
                   alt={user.displayName || 'User'}
                   referrerPolicy="no-referrer"
+                  onError={handleAvatarError}
                 />
               ) : (
                 <div className="header__avatar header__avatar--fallback">
@@ -81,12 +84,13 @@ export default function Header({ onMenuClick }) {
             {profileOpen && (
               <div className="profile-card">
                 <div className="profile-card__top">
-                  {user.photoURL ? (
+                  {user.photoURL && !avatarError ? (
                     <img
                       className="profile-card__avatar"
                       src={user.photoURL}
                       alt={user.displayName || 'User'}
                       referrerPolicy="no-referrer"
+                      onError={handleAvatarError}
                     />
                   ) : (
                     <div className="profile-card__avatar profile-card__avatar--fallback">

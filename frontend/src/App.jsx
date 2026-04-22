@@ -5,6 +5,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import LoadingSpinner from './components/LoadingSpinner';
+import AdBanner from './components/AdBanner';
 import './App.css';
 
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -32,6 +33,7 @@ export default function App() {
                   <Route path="/new" element={<NewNote />} />
                 </Routes>
               </Suspense>
+              <AdBanner />
             </main>
           </div>
         </div>
