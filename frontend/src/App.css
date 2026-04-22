@@ -296,10 +296,35 @@ input, select, textarea { font-family: inherit; }
   .breadcrumb { font-size: 0.8rem; flex-wrap: wrap; }
 }
 
-/* Prevent MDEditor toolbar from causing horizontal overflow */
+/* MDEditor base fixes */
 .w-md-editor { max-width: 100% !important; box-sizing: border-box; }
 .w-md-editor-toolbar { overflow-x: auto; scrollbar-width: thin; }
 .w-md-editor-content { overflow-x: auto; }
+/* Hide the drag-to-resize bar — prop fallback */
+.w-md-editor-bar { display: none !important; }
+/* Force light-mode background regardless of system theme */
+.w-md-editor,
+.w-md-editor .w-md-editor-text-pre,
+.w-md-editor .w-md-editor-text-input,
+.w-md-editor .CodeMirror {
+  background: #ffffff !important;
+  color: #1e293b !important;
+}
+
+/* Fix code block visibility inside the EDITOR text overlay (syntax highlight layer).
+   The device dark mode makes code tokens dark-on-dark — force them light. */
+.w-md-editor-text-pre .token.code-block,
+.w-md-editor-text-pre .token.code-snippet,
+.w-md-editor-text-pre .token.code {
+  color: #93c5fd !important;   /* soft blue, readable on any dark bg */
+  background: transparent !important;
+}
+.w-md-editor-text-pre .token.punctuation {
+  color: #94a3b8 !important;   /* muted for the ``` fence markers */
+}
+.w-md-editor-text-pre > code {
+  color: #e2e8f0 !important;
+}
 
 /* Fix code block visibility in markdown preview (wmde-markdown overrides light theme) */
 .wmde-markdown pre,
