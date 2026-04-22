@@ -302,45 +302,42 @@ input, select, textarea { font-family: inherit; }
 .w-md-editor-content { overflow-x: auto; }
 /* Hide the drag-to-resize bar */
 .w-md-editor-bar { display: none !important; }
-/* Code fence tokens — readable on the light editor background */
+/* Code fence tokens in the editor syntax-highlight overlay */
 .w-md-editor-text-pre .token.code-block,
 .w-md-editor-text-pre .token.code-snippet,
 .w-md-editor-text-pre .token.code {
-  color: #2563eb !important;
+  color: #3b82f6 !important;
   background: transparent !important;
 }
 .w-md-editor-text-pre .token.punctuation {
   color: #64748b !important;
 }
 
-/* Fix code block visibility in markdown preview (wmde-markdown overrides light theme) */
-.wmde-markdown pre,
-.wmde-markdown-var pre {
+/* Code block styles scoped to note-view only — keeps them out of the editor pane.
+   The broad .wmde-markdown-var pre selector also matches the editor's own
+   pre.w-md-editor-text-pre overlay, which turned the whole editor dark navy. */
+.note-view__content pre {
   background: #1e293b !important;
   border-radius: 8px !important;
   padding: 16px !important;
   margin-bottom: 1em !important;
   overflow-x: auto !important;
 }
-.wmde-markdown pre code,
-.wmde-markdown-var pre code {
+.note-view__content pre code {
   background: transparent !important;
   color: #e2e8f0 !important;
   font-size: 0.88em !important;
   padding: 0 !important;
   white-space: pre !important;
 }
-.wmde-markdown code:not(pre code),
-.wmde-markdown-var code:not(pre code) {
+.note-view__content code:not(pre code) {
   background: #f1f5f9 !important;
   color: #334155 !important;
   padding: 2px 6px !important;
   border-radius: 4px !important;
   font-size: 0.88em !important;
 }
-/* Override any syntax highlight span colors that go near-white */
-.wmde-markdown pre code span,
-.wmde-markdown-var pre code span {
+.note-view__content pre code span {
   color: inherit;
 }
 
