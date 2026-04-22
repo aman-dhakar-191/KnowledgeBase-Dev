@@ -13,9 +13,10 @@ function toDate(ts) {
 }
 
 export default function NoteCard({ note, onDelete }) {
-  const { isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
   const updatedAt = toDate(note.updatedAt);
   const validDate = updatedAt && !isNaN(updatedAt);
+  const canEdit = isAdmin || (user && note.ownerId && user.uid === note.ownerId);
 
   const syncColor = note.syncStatus === 'SYNCED' ? '#4CAF50' : note.syncStatus === 'FAILED' ? '#f44336' : '#FF9800';
 
@@ -26,12 +27,12 @@ export default function NoteCard({ note, onDelete }) {
           {note.isPrivate && <FiLock className="note-card__private-icon" title="Private" />}
           {note.title}
         </Link>
-        {isAdmin && (
+        {canEdit && (
           <div className="note-card__actions">
             <Link to={`/note/${note.id}`} className="note-card__action-btn" aria-label="Edit note" title="Edit">
               <FiEdit />
             </Link>
-            {onDelete && (
+            {isAdmin && onDelete && (
               <button
                 className="note-card__action-btn note-card__action-btn--danger"
                 onClick={() => onDelete(note.id)}

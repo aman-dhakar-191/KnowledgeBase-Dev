@@ -32,14 +32,20 @@ async function requireAdmin(req, res, next) {
   }
 }
 
-// Silently resolves auth — sets req.isAdmin without blocking the request
+// Silently resolves auth — sets req.isAdmin without blocking the request.
+// Reuses req.user if requireAuth already ran (avoids double token verification).
 async function resolveAdmin(req, _res, next) {
   req.isAdmin = false;
+  if (req.user) {
+    req.isAdmin = Boolean(ADMIN_EMAIL && req.user.email === ADMIN_EMAIL);
+    return next();
+  }
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith('Bearer ')) return next();
   try {
     const decoded = await admin.auth().verifyIdToken(authHeader.slice(7));
     req.isAdmin = Boolean(ADMIN_EMAIL && decoded.email === ADMIN_EMAIL);
+    req.user = decoded;
   } catch { /* ignore */ }
   next();
 }

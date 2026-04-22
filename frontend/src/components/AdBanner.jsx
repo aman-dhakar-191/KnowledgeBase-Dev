@@ -5,6 +5,8 @@ import { useAuth } from '../contexts/AuthContext';
 const ADSENSE_CLIENT = 'ca-pub-XXXXXXXXXXXXXXXXX';
 const ADSENSE_SLOT = 'XXXXXXXXXX';
 
+const IS_CONFIGURED = !ADSENSE_CLIENT.includes('XXX') && !ADSENSE_SLOT.includes('XXX');
+
 export default function AdBanner() {
   const { isAdmin } = useAuth();
   const adRef = useRef(null);
@@ -22,8 +24,8 @@ export default function AdBanner() {
     }
   }, [isAdmin]);
 
-  // Admins see nothing
-  if (isAdmin) return null;
+  // Only render when properly configured and not admin
+  if (isAdmin || !IS_CONFIGURED) return null;
 
   return (
     <div className="ad-banner">
