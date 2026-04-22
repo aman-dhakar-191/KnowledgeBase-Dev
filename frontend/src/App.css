@@ -535,3 +535,18 @@ input, select, textarea { font-family: inherit; }
   text-overflow: ellipsis;
   max-width: 120px;
 }
+
+/* MDEditor fixes */
+.w-md-editor-text-textarea,
+.w-md-editor-text-input {
+  vertical-align: top !important;
+  padding-top: 10px !important;
+}
+.w-md-editor-toolbar {
+  flex-wrap: wrap !important;
+  height: auto !important;
+}
+@media (max-width: 600px) {
+  .w-md-editor-toolbar ul { flex-wrap: wrap; gap: 2px; }
+  .w-md-editor-toolbar li > button { padding: 4px; font-size: 14px; }
+}
