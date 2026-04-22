@@ -369,10 +369,11 @@ input, select, textarea { font-family: inherit; }
 .header__avatar--fallback { width: 30px; height: 30px; font-size: 0.85rem; }
 
 .profile-card {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
+  position: fixed;
+  top: calc(var(--header-height) + 4px);
+  right: 8px;
   width: 270px;
+  max-width: calc(100vw - 16px);
   background: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
