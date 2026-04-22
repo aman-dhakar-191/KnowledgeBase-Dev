@@ -517,3 +517,21 @@ input, select, textarea { font-family: inherit; }
     min-height: 60px;
   }
 }
+
+/* Owner display */
+.note-view__owner {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.note-card__owner {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}

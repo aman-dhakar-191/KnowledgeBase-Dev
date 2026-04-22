@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FiClock, FiTag, FiGitBranch, FiTrash2, FiEdit, FiLock } from 'react-icons/fi';
+import { FiClock, FiTag, FiGitBranch, FiTrash2, FiEdit, FiLock, FiUser } from 'react-icons/fi';
 import { formatDistanceToNow } from 'date-fns';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -63,6 +63,11 @@ export default function NoteCard({ note, onDelete }) {
           <FiGitBranch /> {note.syncStatus || 'PENDING'}
         </span>
         {note.version && <span className="note-card__version">v{note.version}</span>}
+        {note.ownerEmail && (
+          <span className="note-card__owner" title={`Created by ${note.ownerEmail}`}>
+            <FiUser /> {note.ownerEmail.split('@')[0]}
+          </span>
+        )}
       </div>
 
       {note.tags && note.tags.length > 0 && (
