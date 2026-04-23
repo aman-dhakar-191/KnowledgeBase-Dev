@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { FiX, FiCheck, FiImage, FiLock } from 'react-icons/fi';
+import { FiX, FiCheck, FiImage, FiLock, FiEye, FiEdit2 } from 'react-icons/fi';
 import MDEditor from '@uiw/react-md-editor';
 import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -27,6 +27,7 @@ export default function NoteEditor({ initialNote, onSave, onCancel, isSaving }) 
   const [form, setForm] = useState(() => getInitialForm(initialNote));
   const [tagInput, setTagInput] = useState('');
   const [errors, setErrors] = useState({});
+  const [editorPreview, setEditorPreview] = useState('edit');
 
   const [addingCat, setAddingCat] = useState(false);
   const [newCatName, setNewCatName] = useState('');
@@ -298,14 +299,23 @@ export default function NoteEditor({ initialNote, onSave, onCancel, isSaving }) 
       <div className="form-group">
         <div className="form-label-row">
           <label className="form-label">Content * (Markdown supported)</label>
-          <button
-            type="button"
-            className="btn btn--secondary btn--sm"
-            onClick={() => fileInputRef.current.click()}
-            disabled={isSaving || uploading}
-          >
-            <FiImage /> {uploading ? 'Uploading...' : 'Upload Image'}
-          </button>
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              type="button"
+              className="btn btn--secondary btn--sm"
+              onClick={() => setEditorPreview(m => m === 'edit' ? 'preview' : 'edit')}
+            >
+              {editorPreview === 'edit' ? <><FiEye /> Preview</> : <><FiEdit2 /> Edit</>}
+            </button>
+            <button
+              type="button"
+              className="btn btn--secondary btn--sm"
+              onClick={() => fileInputRef.current.click()}
+              disabled={isSaving || uploading}
+            >
+              <FiImage /> {uploading ? 'Uploading...' : 'Upload Image'}
+            </button>
+          </div>
         </div>
         <input
           ref={fileInputRef}
@@ -320,7 +330,7 @@ export default function NoteEditor({ initialNote, onSave, onCancel, isSaving }) 
           value={form.content}
           onChange={(val) => handleChange('content', val || '')}
           height={400}
-          preview="edit"
+          preview={editorPreview}
           visibleDragbar={false}
           extraCommands={[]}
           textareaProps={{ style: { verticalAlign: 'top' } }}
