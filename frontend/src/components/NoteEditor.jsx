@@ -316,18 +316,15 @@ export default function NoteEditor({ initialNote, onSave, onCancel, isSaving }) 
         />
         {uploadError && <span className="form-error">{uploadError}</span>}
         {errors.content && <span className="form-error">{errors.content}</span>}
-        <div data-color-mode="light">
-          <MDEditor
-            data-color-mode="light"
-            value={form.content}
-            onChange={(val) => handleChange('content', val || '')}
-            height={400}
-            preview="edit"
-            visibleDragbar={false}
-            extraCommands={[]}
-            textareaProps={{ style: { verticalAlign: 'top' } }}
-          />
-        </div>
+        <MDEditor
+          value={form.content}
+          onChange={(val) => handleChange('content', val || '')}
+          height={400}
+          preview="edit"
+          visibleDragbar={false}
+          extraCommands={[]}
+          textareaProps={{ style: { verticalAlign: 'top' } }}
+        />
       </div>
 
       {isAdmin && (
