@@ -324,6 +324,7 @@ export default function NoteEditor({ initialNote, onSave, onCancel, isSaving }) 
             height={400}
             preview="edit"
             visibleDragbar={false}
+            extraCommands={[]}
             textareaProps={{ style: { verticalAlign: 'top' } }}
           />
         </div>
