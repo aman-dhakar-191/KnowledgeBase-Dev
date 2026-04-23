@@ -157,7 +157,7 @@ export default function NoteView() {
             </div>
           )}
 
-          <div className="note-view__content" data-color-mode="light">
+          <div className="note-view__content">
             <MDEditor.Markdown source={note.content} />
           </div>
         </article>

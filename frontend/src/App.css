@@ -302,7 +302,8 @@ input, select, textarea { font-family: inherit; }
 .w-md-editor-content { overflow-x: auto; }
 /* Hide the drag-to-resize bar */
 .w-md-editor-bar { display: none !important; }
-/* Code fence tokens in the editor syntax-highlight overlay */
+
+/* Code fence tokens in the editor syntax-highlight overlay — light mode */
 .w-md-editor-text-pre .token.code-block,
 .w-md-editor-text-pre .token.code-snippet,
 .w-md-editor-text-pre .token.code {
@@ -311,6 +312,17 @@ input, select, textarea { font-family: inherit; }
 }
 .w-md-editor-text-pre .token.punctuation {
   color: #64748b !important;
+}
+/* Dark mode: use lighter shades so tokens stay readable */
+@media (prefers-color-scheme: dark) {
+  .w-md-editor-text-pre .token.code-block,
+  .w-md-editor-text-pre .token.code-snippet,
+  .w-md-editor-text-pre .token.code {
+    color: #93c5fd !important;
+  }
+  .w-md-editor-text-pre .token.punctuation {
+    color: #94a3b8 !important;
+  }
 }
 
 /* Code block styles scoped to note-view only — keeps them out of the editor pane.
@@ -336,6 +348,12 @@ input, select, textarea { font-family: inherit; }
   padding: 2px 6px !important;
   border-radius: 4px !important;
   font-size: 0.88em !important;
+}
+@media (prefers-color-scheme: dark) {
+  .note-view__content code:not(pre code) {
+    background: #334155 !important;
+    color: #e2e8f0 !important;
+  }
 }
 .note-view__content pre code span {
   color: inherit;
