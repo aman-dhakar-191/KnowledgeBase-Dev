@@ -5,10 +5,8 @@
 import { auth } from './firebase';
 
 const API_BASE_URL = import.meta.env.VITE_FUNCTIONS_URL || '/api';
-const WRITE_METHODS = new Set(['POST', 'PUT', 'DELETE', 'PATCH']);
 
-async function getAuthHeader(method) {
-  if (!WRITE_METHODS.has((method || 'GET').toUpperCase())) return {};
+async function getAuthHeader() {
   const user = auth.currentUser;
   if (!user) return {};
   const token = await user.getIdToken();
@@ -17,7 +15,7 @@ async function getAuthHeader(method) {
 
 async function request(path, options = {}) {
   const url = `${API_BASE_URL}${path}`;
-  const authHeader = await getAuthHeader(options.method);
+  const authHeader = await getAuthHeader();
   const config = {
     ...options,
     headers: { 'Content-Type': 'application/json', ...authHeader, ...options.headers },
@@ -84,3 +82,29 @@ export const uploadImage = (filename, contentType, base64Data) =>
     method: 'POST',
     body: JSON.stringify({ filename, contentType, data: base64Data }),
   });
+
+// Subscriptions
+export const getSubscriptions = () => request('/subscriptions');
+
+export const subscribe = (data) =>
+  request('/subscriptions', { method: 'POST', body: JSON.stringify(data) });
+
+export const deleteSubscription = (id) =>
+  request(`/subscriptions/${id}`, { method: 'DELETE' });
+
+export const unsubscribeFromTarget = (type, targetId) =>
+  request(`/subscriptions/by-target?type=${encodeURIComponent(type)}&targetId=${encodeURIComponent(targetId)}`, {
+    method: 'DELETE',
+  });
+
+// Notifications
+export const getNotifications = () => request('/notifications');
+
+export const markNotificationRead = (id) =>
+  request(`/notifications/${id}/read`, { method: 'PATCH' });
+
+export const markAllNotificationsRead = () =>
+  request('/notifications/read-all', { method: 'PATCH' });
+
+export const deleteNotification = (id) =>
+  request(`/notifications/${id}`, { method: 'DELETE' });
