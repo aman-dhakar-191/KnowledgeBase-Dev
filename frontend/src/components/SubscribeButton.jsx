@@ -3,7 +3,7 @@ import { FiBell, FiBellOff } from 'react-icons/fi';
 import { getSubscriptions, subscribe, deleteSubscription } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 
-export default function SubscribeButton({ type, targetId, targetName }) {
+export default function SubscribeButton({ type, targetId, targetName, label }) {
   const { user } = useAuth();
   const [subscriptionId, setSubscriptionId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -44,15 +44,16 @@ export default function SubscribeButton({ type, targetId, targetName }) {
   if (!user || !ready) return null;
 
   const isSubscribed = Boolean(subscriptionId);
+  const display = label || (type === 'user' ? 'Author' : 'Category');
   return (
     <button
       className={`btn btn--sm subscribe-btn ${isSubscribed ? 'subscribe-btn--active' : ''}`}
       onClick={handleToggle}
       disabled={loading}
-      title={isSubscribed ? 'Unsubscribe' : `Subscribe to ${targetName || type}`}
+      title={isSubscribed ? `Unsubscribe from ${display}` : `Subscribe to ${display}`}
     >
       {isSubscribed ? <FiBellOff /> : <FiBell />}
-      {isSubscribed ? 'Subscribed' : 'Subscribe'}
+      {isSubscribed ? `Following ${display}` : `Follow ${display}`}
     </button>
   );
 }

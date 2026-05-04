@@ -158,6 +158,7 @@ export default function NoteView() {
                   type="user"
                   targetId={note.ownerId}
                   targetName={note.ownerEmail}
+                  label="Author"
                 />
               )}
               {category && (
@@ -165,6 +166,7 @@ export default function NoteView() {
                   type="category"
                   targetId={note.categoryId}
                   targetName={category.name}
+                  label={category.name}
                 />
               )}
             </div>
