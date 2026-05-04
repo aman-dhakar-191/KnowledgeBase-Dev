@@ -7,6 +7,8 @@ const categoriesRouter = require('./notes/categories');
 const sectionsRouter = require('./notes/sections');
 const tagsRouter = require('./notes/tags');
 const uploadRouter = require('./upload');
+const subscriptionsRouter = require('./subscriptions/index');
+const notificationsRouter = require('./notifications/index');
 
 const app = express();
 
@@ -32,6 +34,8 @@ app.use('/categories', categoriesRouter);
 app.use('/sections', sectionsRouter);
 app.use('/tags', tagsRouter);
 app.use('/upload', uploadRouter);
+app.use('/subscriptions', subscriptionsRouter);
+app.use('/notifications', notificationsRouter);
 
 // 404 handler
 app.use((req, res) => res.status(404).json({ success: false, message: 'Route not found' }));

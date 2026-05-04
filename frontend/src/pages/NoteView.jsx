@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
 import { FiEdit, FiTrash2, FiArrowLeft, FiGitBranch, FiClock, FiLock, FiUser } from 'react-icons/fi';
+import SubscribeButton from '../components/SubscribeButton';
 import { formatDistanceToNow } from 'date-fns';
 import NoteEditor from '../components/NoteEditor';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -148,6 +149,26 @@ export default function NoteView() {
               </span>
             )}
           </div>
+
+          {/* Subscribe controls — only visible to logged-in users who don't own the note */}
+          {user && user.uid !== note.ownerId && (
+            <div className="note-view__subscribe-row">
+              {note.ownerId && (
+                <SubscribeButton
+                  type="user"
+                  targetId={note.ownerId}
+                  targetName={note.ownerEmail}
+                />
+              )}
+              {category && (
+                <SubscribeButton
+                  type="category"
+                  targetId={note.categoryId}
+                  targetName={category.name}
+                />
+              )}
+            </div>
+          )}
 
           {note.tags && note.tags.length > 0 && (
             <div className="note-view__tags">

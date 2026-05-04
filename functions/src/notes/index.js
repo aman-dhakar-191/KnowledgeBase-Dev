@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { db } = require('../services/firestore');
 const { saveFileToGitHub, deleteFileFromGitHub } = require('../services/github');
+const { dispatchNotifications } = require('../services/notificationDispatcher');
 const admin = require('firebase-admin');
 const { requireAuth, requireAdmin, resolveAdmin } = require('../middleware/auth');
 
@@ -126,8 +127,11 @@ router.post('/', requireAuth, resolveAdmin, async (req, res) => {
       tagBatch.commit().catch((err) => console.error('Tag upsert failed for note', noteId, 'tags:', noteData.tags, err));
     }
 
-    // Sync to GitHub asynchronously (don't block response)
+    // Dispatch notifications asynchronously (don't block response)
     const noteWithId = { id: noteId, ...noteData };
+    dispatchNotifications(noteWithId);
+
+    // Sync to GitHub asynchronously (don't block response)
     syncToGitHub(noteWithId)
       .then(async (path) => {
         await noteRef.update({ syncStatus: 'SYNCED', githubPath: path });

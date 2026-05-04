@@ -2,6 +2,7 @@ import { FiMenu, FiPlus, FiLogIn, FiLogOut, FiShield } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import SearchBar from './SearchBar';
+import NotificationBell from './NotificationBell';
 import { useApp } from '../contexts/AppContext';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -59,6 +60,7 @@ export default function Header({ onMenuClick }) {
             <FiPlus /> New Note
           </Link>
         )}
+        {user && <NotificationBell />}
         {user ? (
           <div className="header__user" ref={profileRef}>
             <button
