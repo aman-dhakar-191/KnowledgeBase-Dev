@@ -8,13 +8,10 @@ const NotificationContext = createContext(null);
 
 export function NotificationProvider({ children }) {
   const { user } = useAuth();
-  const [notifications, setNotifications] = useState([]);
+  const [rawNotifications, setRawNotifications] = useState([]);
 
   useEffect(() => {
-    if (!user) {
-      setNotifications([]);
-      return;
-    }
+    if (!user) return;
 
     // Real-time listener using Firestore onSnapshot.
     // Firestore rules allow authenticated users to read their own notification docs.
@@ -25,14 +22,16 @@ export function NotificationProvider({ children }) {
       limit(50)
     );
 
-    const unsubscribe = onSnapshot(
+    return onSnapshot(
       q,
-      (snapshot) => setNotifications(snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))),
+      (snapshot) => setRawNotifications(snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))),
       (err) => console.error('Notification listener error:', err.message)
     );
-
-    return unsubscribe;
   }, [user]);
+
+  // When user is null (logged out) expose an empty array without calling setState
+  // synchronously inside the effect, which triggers react-hooks/set-state-in-effect.
+  const notifications = user ? rawNotifications : [];
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
